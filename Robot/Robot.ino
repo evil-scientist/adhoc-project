@@ -9,14 +9,12 @@
 #define FWD 0
 #define ACK 1
 #define ADDRESS 0
-#define MOTOR_FRONT_LEFT_P  35
-#define MOTOR_FRONT_LEFT_N  33
-#define MOTOR_BACK_LEFT_P  27
-#define MOTOR_BACK_LEFT_N  25
-#define MOTOR_FRONT_RIGHT_P 39
-#define MOTOR_FRONT_RIGHT_N  37
-#define MOTOR_BACK_RIGHT_P  31
-#define MOTOR_BACK_RIGHT_N    29
+
+#define MOTOR_LEFT_PWM  35
+#define MOTOR_LEFT_DIR  33
+#define MOTOR_RIGHT_PWM 39
+#define MOTOR_RIGHT_DIR  37
+
 #define ULTRASONIC_FRONT_TRIGGER   43
 #define ULTRASONIC_FRONT_ECHO   41
 
@@ -166,14 +164,10 @@ ISR(TIMER1_OVF_vect)
 
 void initGPIO()
 {
- pinMode(MOTOR_FRONT_LEFT_P,OUTPUT);
- pinMode(MOTOR_FRONT_LEFT_N,OUTPUT);
- pinMode(MOTOR_BACK_LEFT_P,OUTPUT);
- pinMode(MOTOR_BACK_LEFT_N,OUTPUT);
- pinMode(MOTOR_FRONT_RIGHT_P,OUTPUT);
- pinMode(MOTOR_FRONT_RIGHT_N,OUTPUT);
- pinMode(MOTOR_BACK_RIGHT_P,OUTPUT);
- pinMode(MOTOR_BACK_RIGHT_N,OUTPUT);
+ pinMode(MOTOR_RIGHT_PWM,OUTPUT);
+ pinMode(MOTOR_RIGHT_DIR,OUTPUT);
+ pinMode(MOTOR_LEFT_PWM,OUTPUT);
+ pinMode(MOTOR_LEFT_DIR,OUTPUT);
  pinMode(REDLED,OUTPUT);
  pinMode(WHITELED,OUTPUT);
  pinMode(YELLOWLED,OUTPUT);
@@ -234,34 +228,21 @@ void moveForward()
 
 {
   stopMotors();
-  digitalWrite(MOTOR_FRONT_LEFT_P,HIGH);
-  digitalWrite(MOTOR_FRONT_LEFT_N,LOW);
-
-  digitalWrite(MOTOR_BACK_LEFT_P,HIGH);
-  digitalWrite(MOTOR_BACK_LEFT_N,LOW);
   
-  digitalWrite(MOTOR_FRONT_RIGHT_P,HIGH);
-  digitalWrite(MOTOR_FRONT_RIGHT_N,LOW);
+  analogWrite(MOTOR_LEFT_PWM,127);
+  digitalWrite(MOTOR_LEFT_DIR,LOW);
 
-  digitalWrite(MOTOR_BACK_RIGHT_P,HIGH);
-  digitalWrite(MOTOR_BACK_RIGHT_N,LOW);
+  analogWrite(MOTOR_RIGHT_PWM,127);
+  digitalWrite(MOTOR_RIGHT_DIR,LOW);
 
 }
 
 //Stop movement
 void stopMotors()
 {
-  digitalWrite(MOTOR_FRONT_LEFT_P,LOW);
-  digitalWrite(MOTOR_FRONT_LEFT_N,LOW);
+  digitalWrite(MOTOR_LEFT_PWM,LOW);
 
-  digitalWrite(MOTOR_BACK_LEFT_P,LOW);
-  digitalWrite(MOTOR_BACK_LEFT_N,LOW);
-  
-  digitalWrite(MOTOR_FRONT_RIGHT_P,LOW);
-  digitalWrite(MOTOR_FRONT_RIGHT_N,LOW);
-
-  digitalWrite(MOTOR_BACK_RIGHT_P,LOW);
-  digitalWrite(MOTOR_BACK_RIGHT_N,LOW);
+  digitalWrite(MOTOR_RIGHT_PWM,LOW);
 
   delay(200);  
 }
@@ -288,17 +269,12 @@ void moveBackForTime(uint8_t data)
 void moveBack()
 {
   stopMotors();
-  digitalWrite(MOTOR_FRONT_LEFT_P,LOW);
-  digitalWrite(MOTOR_FRONT_LEFT_N,HIGH);
+  analogWrite(MOTOR_LEFT_PWM,127);
+  digitalWrite(MOTOR_LEFT_DIR,HIGH);
 
-  digitalWrite(MOTOR_BACK_LEFT_P,LOW);
-  digitalWrite(MOTOR_BACK_LEFT_N,HIGH);
+  analogWrite(MOTOR_RIGHT_PWM,127);
+  digitalWrite(MOTOR_RIGHT_DIR,HIGH);
   
-  digitalWrite(MOTOR_FRONT_RIGHT_P,LOW);
-  digitalWrite(MOTOR_FRONT_RIGHT_N,HIGH);
-
-  digitalWrite(MOTOR_BACK_RIGHT_P,LOW);
-  digitalWrite(MOTOR_BACK_RIGHT_N,HIGH);
 }
 
 //Turn left for specific time (in seconds)
@@ -306,17 +282,9 @@ void turnLeft(uint8_t data)
 
 {
   stopMotors();
-  digitalWrite(MOTOR_FRONT_LEFT_P,LOW);
-  digitalWrite(MOTOR_FRONT_LEFT_N,HIGH);
-
-  digitalWrite(MOTOR_BACK_LEFT_P,LOW);
-  digitalWrite(MOTOR_BACK_LEFT_N,HIGH);
+  analogWrite(MOTOR_RIGHT_PWM,127);
+  digitalWrite(MOTOR_RIGHT_DIR,LOW);
   
-  digitalWrite(MOTOR_FRONT_RIGHT_P,HIGH);
-  digitalWrite(MOTOR_FRONT_RIGHT_N,LOW);
-
-  digitalWrite(MOTOR_BACK_RIGHT_P,HIGH);
-  digitalWrite(MOTOR_BACK_RIGHT_N,LOW);  
   movementTime = data;
   tempMovementTime = (uint16_t)(millis()/1000);
   Command = TURNLEFT;
@@ -326,17 +294,9 @@ void turnLeft(uint8_t data)
 void turnRight(uint8_t data)
 { 
   stopMotors();
-  digitalWrite(MOTOR_FRONT_LEFT_P,HIGH);
-  digitalWrite(MOTOR_FRONT_LEFT_N,LOW);
+  analogWrite(MOTOR_LEFT_PWM,127);
+  digitalWrite(MOTOR_LEFT_DIR,LOW);
 
-  digitalWrite(MOTOR_BACK_LEFT_P,HIGH);
-  digitalWrite(MOTOR_BACK_LEFT_N,LOW);
-  
-  digitalWrite(MOTOR_FRONT_RIGHT_P,LOW);
-  digitalWrite(MOTOR_FRONT_RIGHT_N,HIGH);
-
-  digitalWrite(MOTOR_BACK_RIGHT_P,LOW);
-  digitalWrite(MOTOR_BACK_RIGHT_N,HIGH); 
   movementTime = data;
   tempMovementTime = (uint16_t)(millis()/1000);
   Command = TURNRIGHT;
@@ -495,7 +455,7 @@ void sendPacket(uint8_t src, uint8_t dst, uint8_t internal, uint8_t isTCP, uint8
 void setup() 
 {
 Serial.begin(115200);
-setID(15);
+setID(2);
 nodeID = getID();
 packetSerial.setPacketHandler(&onPacket);
 packetSerial.begin(115200);
