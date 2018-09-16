@@ -10,10 +10,10 @@
 #define ACK 1
 #define ADDRESS 0
 
-#define MOTOR_LEFT_PWM  35
-#define MOTOR_LEFT_DIR  33
-#define MOTOR_RIGHT_PWM 39
-#define MOTOR_RIGHT_DIR  37
+#define MOTOR_LEFT_PWM  10
+#define MOTOR_LEFT_DIR  9
+#define MOTOR_RIGHT_PWM 12
+#define MOTOR_RIGHT_DIR  13
 
 #define ULTRASONIC_FRONT_TRIGGER   43
 #define ULTRASONIC_FRONT_ECHO   41
@@ -66,9 +66,9 @@ uint8_t matrix[NODECOUNT][NODECOUNT]={{0,1,0,1,1,1,0,1,0,0,0,0,0,1,0,1},
                                       {1,0,0,0,1,0,0,0,0,0,0,0,1,0,1,0},
                                       {0,0,0,1,0,0,0,1,0,0,0,0,1,0,0,1},
                                       {0,0,1,0,0,0,1,0,0,0,0,0,0,1,1,0}};
-char ssid[] = "internet";
-char password[] = "connectplease";
-char ip[] = {192,168,43,49};
+char ssid[] = "AdHocRobots";
+char password[] = "iliketomoveit";
+char ip[] = {10,0,0,5};
 
 uint8_t Command = 0;
 long Rssi = 0;
@@ -136,6 +136,11 @@ void handleCommands(uint8_t src, uint8_t dst, uint8_t internal, uint8_t tcp, uin
                   sendPacket(dst, src, internal, tcp, ACK, counterH, counterL, 2, tempData);
                   break; 
     }
+#define TCP 1
+#define ADHOC 0
+#define FWD 0
+#define ACK 1
+#define ADDRESS 0
   }
 
 //Timer 1 interrupt service routine
@@ -221,9 +226,8 @@ uint8_t getDistanceFront()
  return duration/58.2;
 }
 
-//
 
-//Move forward
+// Move forward
 void moveForward()
 
 {
@@ -351,7 +355,7 @@ void sendIP()
   sendPacket(nodeID,nodeID,INT_IP,TCP,FWD,0,0,sizeof(ip),ip);
 }
 
-//Send AP SSID and password to ESP32
+//Send AP and password to ESP32
 void sendSSIDandPassword()
 {
   char *ssid_pwd = (char*)calloc(strlen(ssid)+strlen(password)+2,sizeof(char));
@@ -512,4 +516,3 @@ void OnReceive(uint8_t src, uint8_t dst, uint8_t internal, uint8_t tcp, uint8_t 
       handleCommands(src, dst, internal, tcp, fwd, counterH, counterL, datalen, command, data);
   }
 }
-
