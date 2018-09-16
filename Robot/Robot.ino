@@ -68,7 +68,7 @@ uint8_t matrix[NODECOUNT][NODECOUNT]={{0,1,0,1,1,1,0,1,0,0,0,0,0,1,0,1},
                                       {0,0,1,0,0,0,1,0,0,0,0,0,0,1,1,0}};
 char ssid[] = "AdHocRobots";
 char password[] = "iliketomoveit";
-char ip[] = {10,0,0,5};
+char ip[] = {10,0,0,3};
 
 uint8_t Command = 0;
 long Rssi = 0;
@@ -229,15 +229,14 @@ uint8_t getDistanceFront()
 
 // Move forward
 void moveForward()
-
 {
   stopMotors();
   
-  analogWrite(MOTOR_LEFT_PWM,127);
   digitalWrite(MOTOR_LEFT_DIR,LOW);
+  digitalWrite(MOTOR_LEFT_PWM,HIGH);
 
-  analogWrite(MOTOR_RIGHT_PWM,127);
   digitalWrite(MOTOR_RIGHT_DIR,LOW);
+  digitalWrite(MOTOR_RIGHT_PWM,HIGH);
 
 }
 
@@ -273,21 +272,20 @@ void moveBackForTime(uint8_t data)
 void moveBack()
 {
   stopMotors();
-  analogWrite(MOTOR_LEFT_PWM,127);
   digitalWrite(MOTOR_LEFT_DIR,HIGH);
+  digitalWrite(MOTOR_LEFT_PWM,HIGH);
 
-  analogWrite(MOTOR_RIGHT_PWM,127);
   digitalWrite(MOTOR_RIGHT_DIR,HIGH);
+  digitalWrite(MOTOR_RIGHT_PWM,HIGH);
   
 }
 
 //Turn left for specific time (in seconds)
 void turnLeft(uint8_t data)
-
 {
   stopMotors();
-  analogWrite(MOTOR_RIGHT_PWM,127);
   digitalWrite(MOTOR_RIGHT_DIR,LOW);
+  digitalWrite(MOTOR_RIGHT_PWM,HIGH);
   
   movementTime = data;
   tempMovementTime = (uint16_t)(millis()/1000);
@@ -298,8 +296,8 @@ void turnLeft(uint8_t data)
 void turnRight(uint8_t data)
 { 
   stopMotors();
-  analogWrite(MOTOR_LEFT_PWM,127);
   digitalWrite(MOTOR_LEFT_DIR,LOW);
+  digitalWrite(MOTOR_LEFT_PWM,HIGH);
 
   movementTime = data;
   tempMovementTime = (uint16_t)(millis()/1000);
