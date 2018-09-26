@@ -98,93 +98,41 @@ int main(int argc , char *argv[])
     }
     printf("-----------------------------------------------------------\n");
 
+
+    /* EDITED PART ========================================================= */
+    int repeats = 0;
+
+    int dist = 0;
+    FILE *fout = fopen("log.txt", "w");
+    printf("Enter the damn number of repetitions, you fool");
+    scanf("%d", &repeats);	
+    printf("Team SURYA super power action start!\n\n");
+    dst_id = 2;	
     while(1) {
+		
 
-        printf("Enter Bot ID to send the packet\n");
-        scanf("%d",&dst_id);
-    
-        printf("Enter the command(1-12) to the bot-%d : \n",dst_id);
+        printf("Gimme the distance, u damn fuk: ");
+        scanf("%d", &dist);
 
+	if (dist == -1){
+		fclose(fout);
+ 		return 0;
+	}
 
-        printf("  1. Move forward \n"); 
-        printf("  2. Move forward for time in seconds \n"); 
-        printf("  3. Move reverse \n"); 
-        printf("  4. Move reverse for time in seconds \n"); 
-        printf("  5. Move left time\n"); 
-        printf("  6. Move right time\n"); 
-        printf("  7. Stop the bot\n"); 
- //       printf("  8. Get obstacle distance left \n"); 
- //       printf("  9. Get obstacle distance right\n"); 
-        printf("  8. Get obstacle distance front\n"); 
-        printf("  9. Get RSSI value\n");
-        printf("  10. Get ID\n");
-        printf("  11. Execute commands from file (cmd_file.txt)\n");
-        printf(" Waiting for user input : "); 
+        printf("What a shitty distance, ewgh :(\n");
+        fprintf(fout, "Measuring at distance: %d\n", dist);
 
-        scanf("%d",&cmd_val);        
+        for (int i=0; i<repeats; i++) {
 
-        switch(cmd_val) {
-
-            case 1:
-                send_forward_time(src_id, dst_id,0);
-                break;
-            case 2:
-                printf("Enter the time in seconds : \n");
-                scanf("%d",&val);
-                send_forward_time(src_id, dst_id, val);
-                break;
-            case 3:
-                send_reverse_time(src_id,dst_id,0);
-                break;
-            case 4:
-                printf("Enter the time in seconds : \n");
-                scanf("%d",&val);
-                send_reverse_time(src_id,dst_id,val);
-                break;
-            case 5:
-                printf("Enter the time for left turn in seconds : \n");
-                scanf("%d",&val);
-                send_rotate_left(src_id,dst_id,val);
-                break;
-            case 6:
-                printf("Enter the time for right movement : \n");
-                scanf("%d",&val);
-                send_rotate_right(src_id,dst_id,val);
-                break;
-            case 7:
-                printf("Sending command to stop the bot\n");
-                stop_bot(src_id,dst_id);   
-                break;
-/*            case 8:
-                printf("Fetchng left obstacle sensor information  \n");
-                printf("Left Obtacle sensor reading : %d\n",get_obstacle_data(src_id,dst_id,ULTRASONIC_LEFT));
-                break;
-            case 9:
-                printf("Fetchng right  obstacle sensor information \n");
-                printf("Right Obtacle sensor reading : %d\n",get_obstacle_data(src_id,dst_id,ULTRASONIC_RIGHT));
-                break; */
-            case 8:
-                printf("Fetchng front obstacle sensor information \n");
-                printf("Front Obtacle sensor reading : %d\n",get_obstacle_data(src_id,dst_id,ULTRASONIC_FRONT));
-                break;
-            case 9:
-                printf("Fetchng RSSI information \n");
-                printf("RSSI reading : %ld\n",get_RSSI(src_id,dst_id));
-                break;
-            case 10:
-                printf("Fetchng ID\n");
-                printf("ID of the bot : %d\n",BOT_ID[bot_num]);
-                break;
-            case 11:
-                read_file();
-                break;
-            default:
-                printf("Unknown command received\n");
-                break;
+            long rssi = get_RSSI(src_id, dst_id);
+            printf("%ld\n", rssi);
+            fprintf(fout, "%ld\t", rssi);
 
         }
-        //system("clear");
-		 printf("\r\n\r\n"); 
+
+        printf("\n");
+        fprintf(fout, "\n");
+	
+        //return 0;
     }
-    return 0;
 }
