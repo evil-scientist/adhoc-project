@@ -50,22 +50,22 @@
 #define NODECOUNT 16
 
 //Matrix - Robot ID 0 to ID 15
-uint8_t matrix[NODECOUNT][NODECOUNT]={{0,1,0,1,1,1,0,1,0,0,0,0,0,1,0,1},
-                                      {1,0,1,0,0,0,1,0,0,0,0,0,1,0,0,0},
-                                      {1,0,0,1,1,0,0,0,1,0,0,0,1,0,0,1},
-                                      {0,1,1,0,0,1,0,0,0,1,0,0,0,0,1,0},
-                                      {1,0,0,1,0,1,0,1,0,1,0,0,0,1,0,1},
-                                      {1,0,0,0,1,0,1,0,0,0,0,0,1,0,0,0},
-                                      {0,0,0,0,1,0,0,1,1,0,0,0,1,0,0,1},
-                                      {0,1,0,0,0,1,1,0,0,1,0,0,0,0,1,0},
-                                      {0,0,0,0,0,0,0,1,0,1,0,1,0,1,0,0},
-                                      {1,0,0,0,0,0,1,0,1,0,1,0,0,0,1,0},
-                                      {0,0,0,1,0,0,0,0,1,0,0,1,0,0,0,1},
-                                      {0,1,0,0,0,1,0,0,0,1,1,0,0,1,0,0},
-                                      {0,1,0,0,0,0,0,1,0,0,0,1,0,1,0,1},
-                                      {1,0,0,0,1,0,0,0,0,0,0,0,1,0,1,0},
-                                      {0,0,0,1,0,0,0,1,0,0,0,0,1,0,0,1},
-                                      {0,0,1,0,0,0,1,0,0,0,0,0,0,1,1,0}};
+uint8_t matrix[NODECOUNT][NODECOUNT]={{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+                                      {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+                                      {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+                                      {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+                                      {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+                                      {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+                                      {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+                                      {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+                                      {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+                                      {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+                                      {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+                                      {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+                                      {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+                                      {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+                                      {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+                                      {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}};
 char ssid[] = "AdHocRobots";
 char password[] = "iliketomoveit";
 char ip[] = {10,0,0,5};
@@ -473,9 +473,7 @@ delay(1000);
 sendIP();
 delay(1000);
 sendSSIDandPassword();
-digitalWrite(53, HIGH);
-delay(1000);
-digitalWrite(53, LOW);
+
 //setLED(WHITELED,true);
 //setLED(YELLOWLED,true);
 //setLED(REDLED,true);
@@ -497,7 +495,7 @@ isTCP -> Set with macro TCP or ADHOC depending where you want to send
 dataLength -> Length of data
 data -> Data that has to be sent. The first byte is COMMAND and subsequent bytes are arguments
 **/
-void CreatePacket(uint8_t src, uint8_t dst, uint8_t isTCP, uint8_t dataLength, uint8_t data)
+void CreatePacket(uint8_t src, uint8_t dst, uint8_t isTCP, uint8_t dataLength, uint8_t *data)
 {
   PacketCounter++;
   uint8_t counterLow = PacketCounter & 0xFF;
@@ -511,23 +509,22 @@ void CreatePacket(uint8_t src, uint8_t dst, uint8_t isTCP, uint8_t dataLength, u
 **/
 void OnReceive(uint8_t src, uint8_t dst, uint8_t internal, uint8_t tcp, uint8_t fwd, uint8_t counterH, uint8_t counterL, uint8_t datalen, uint8_t command, uint8_t *data)
 {
-digitalWrite(53,HIGH);
-delay(1000);
-digitalWrite(53,LOW);
       
   //Execute commands if the command is from TCP OR if ID is equal to destination (in Ad-hoc mode)
   if(tcp == TCP || ((tcp == ADHOC) && (nodeID == dst)))
-  { 
+  {       
       handleCommands(src, dst, internal, tcp, fwd, counterH, counterL, datalen, command, data);
-      nodeID = getID();
-      CreatePacket(nodeID,0XFF,ADHOC,datalen,*data);
+      // uint8_t woohoo[] = {command};
+     // uint8_t woohoo[datalen];
+//      for(int index=1; index < 2; index++)
+//      {
+//        woohoo[index] = data[index-1];
+//      }
+      uint8_t woohoo[3];
+      woohoo[0] = command;
+      woohoo[1] = data[1];
+      woohoo[2] = data[0];
+      CreatePacket(1,2,0,sizeof(woohoo),woohoo);
   }
-  //Check BROADCAST PACKET
-  if((tcp == ADHOC) && (dst == 0xFF))
-  { 
-      digitalWrite(53,HIGH);
-      handleCommands(src, dst, internal, tcp, fwd, counterH, counterL, datalen, command, data);
-      delay(1000);
-      digitalWrite(53,LOW);
-  }
+  
 }
