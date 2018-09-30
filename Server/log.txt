@@ -1,6 +1,0 @@
-Measuring at distance: 100
--51	-56	-56	-56	-57	-50	-54	-54	-55	-57	
-Measuring at distance: 95
--52	-51	-49	-51	-51	-52	-51	-51	-51	-50	
-Measuring at distance: 90
--50	-51	-51	-51	-50	-50	-52	-51	-51	-50	
