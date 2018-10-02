@@ -1,30 +1,43 @@
 import os
+import networkx as nx
+import matplotlib.pyplot as plt
+import numpy
 
-AdjacencyMatrix = [[0,1,0,0,0,1,0,0,0,0],
-                   [1,0,1,0,0,0,0,0,0,0],
-                   [0,1,0,1,1,0,0,0,0,0],
-                   [0,0,1,0,0,0,0,0,1,1],
-                   [0,0,1,0,0,1,1,0,0,0],
-                   [1,0,0,0,1,0,0,0,0,0],
-                   [0,0,0,0,1,0,0,1,0,0],
-                   [0,0,0,0,0,0,1,0,0,0],
-                   [0,0,0,1,0,0,0,0,0,0],
-                   [0,0,0,1,0,0,0,0,0,0]]
+
+numberOfNodes = int(raw_input("How many nodes are in the graph?"))
+probability = float(raw_input("what is the probability of edge existence?"))
+
+g = nx.erdos_renyi_graph(numberOfNodes,probability)
+AdjacencyMatrix = nx.adjacency_matrix(g)
+AdjacencyMatrix = nx.to_numpy_matrix(g)
+AdjacencyMatrix = AdjacencyMatrix.tolist()
+#print(AdjacencyMatrix)
+
+#print(AdjacencyMatrix[1])
+
+  
 
 def shortestPath(AdjacencyMatrix,sourceNode):
 	i = 0 
 	m = 1 #used to increasingly find neighbours of neighbours
 	visitedList = []
-	sourceList = [999,999,999,999,999,999,999,999,999,999]; # stores the lenght of the shrtest path
+	sourceList = []
+	intermediateList = []
+	
+	sourceList += ([999] * numberOfNodes) # stores the lenght of the shrtest path but strats out with all 999 values(djikstra)
 	sourceList[sourceNode] = (min(sourceList[sourceNode],0))
 	
-	intermediateList = [999,999,999,999,999,999,999,999,999,999]; #stores the first nexthop in the shortest path
+	intermediateList += ([999] * numberOfNodes) #stores the first nexthop in the shortest path
 	intermediateList[sourceNode] = sourceNode #for the source node it's next hop is itself (this is the condition to stop routing)
+	
+	
 	for row in AdjacencyMatrix[sourceNode]: #loops through the node in question(i.e. that row of the adjacency matrix)
 		if row == 1: #finds neighbours of source node
 			sourceList[i] = (min(sourceList[i],row)) #set distance to 1 in source list
 			intermediateList[i] = i #add this node to the path list
 		i+=1
+		
+		
 	while 999 in sourceList:
 		j = 0
 		for row in sourceList:
@@ -47,19 +60,13 @@ def shortestPath(AdjacencyMatrix,sourceNode):
 	
 	return visitedList
 	
-
-
-
-#source
-#destination
-
-#typeflag = 1 update, typeflag = 0 data
+	
 #initialise elements
 typeFlag, source, destination, sequence, metric, intermediary,data = 1,1,1,1,1,1,1
 packet = [typeFlag, source, destination, sequence, metric, intermediary,data]
 
 class adHocNode(object):
-	def __init__(self,MACAddress,rDestination =[1,2,3,4,5,6,7,8,9,10],rSequence=[],rMetric=[],rNextHop=[]):
+	def __init__(self,MACAddress,rDestination =[],rSequence=[],rMetric=[],rNextHop=[]):
 		self.MACAddress = MACAddress
 		self.rDestination = rDestination
 		self.rSequence = rSequence
@@ -97,26 +104,24 @@ class adHocNode(object):
  
     
 def main():
-	node0 = adHocNode(0)
-	node1 = adHocNode(1)
-	node2 = adHocNode(2)
-	node3 = adHocNode(3)
-	node4 = adHocNode(4)
-	node5 = adHocNode(5)
-	node6 = adHocNode(6)
-	node7 = adHocNode(7)
-	node8 = adHocNode(8)
-	node9 = adHocNode(9)
 	
+	path = [] #path that packet takes. saved as a list for the plot
+	color_map = []
+	
+	nodeList = []
+	for i in range(numberOfNodes):
+		nodeList.append(adHocNode(i))
 		
-	nodeList = [node0,node1,node2,node3,node4,node5,node6,node7,node8,node9]
+	destinationList = []
+	destinationList.extend(range(numberOfNodes))
 			
 	
 	for item in nodeList:
+		item.rDestination = destinationList
 		item.rNextHop = shortestPath(AdjacencyMatrix,item.MACAddress)
-		print item.MACAddress
-		print item.rDestination
-		print item.rNextHop
+		#print item.MACAddress
+		#print item.rDestination
+		#print item.rNextHop
 		
 	#user input source and destination and data
 	print("Got a message to send?")
@@ -124,12 +129,33 @@ def main():
 	source = int(raw_input("What is the source node?"))
 	destination = int(raw_input("What is the destination?"))
 	
-
+	
+	path.append(source)
 	while ((nodeList[source].rNextHop[destination])!=(nodeList[source].rNextHop[source])):
 		nextHop = nodeList[source].rNextHop[destination]
+		path.append(nextHop)
 		#print(nextHop)
 		nodeList[source].sendPacket(nodeList[source].createPacket(1,source,destination,[],[],nextHop,"yes") )
 		source = nextHop
+	
+	
+	for node in g:
+		if node in path:
+			color_map.append('blue')
+		else: color_map.append('green') 
+	
+	
+	print (path)	
+	
+	pos = nx.spring_layout(g)
+	path_edges = zip(path,path[1:])
+	
+	nx.draw(g,pos, node_color='green', with_labels = True)
+	#nx.draw(g, node_color = color_map, with_labels=True)
+	nx.draw_networkx_nodes(g,pos,nodelist=path,node_color='blue')
+	nx.draw_networkx_edges(g,pos,edgelist=path_edges,edge_color='purple',width=5)
+	plt.draw()
+	plt.show()
 		
 
 main()
