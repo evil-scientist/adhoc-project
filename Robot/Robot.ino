@@ -513,18 +513,24 @@ void OnReceive(uint8_t src, uint8_t dst, uint8_t internal, uint8_t tcp, uint8_t 
   //Execute commands if the command is from TCP OR if ID is equal to destination (in Ad-hoc mode)
   if(tcp == TCP || ((tcp == ADHOC) && (nodeID == dst)))
   {       
-      handleCommands(src, dst, internal, tcp, fwd, counterH, counterL, datalen, command, data);
-      // uint8_t woohoo[] = {command};
-     // uint8_t woohoo[datalen];
-//      for(int index=1; index < 2; index++)
-//      {
-//        woohoo[index] = data[index-1];
-//      }
-      uint8_t woohoo[3];
-      woohoo[0] = command;
-      woohoo[1] = data[1];
-      woohoo[2] = data[0];
-      CreatePacket(1,2,0,sizeof(woohoo),woohoo);
+    handleCommands(src, dst, internal, tcp, fwd, counterH, counterL, datalen, command, data);
+    
+    uint8_t dst_id = 3 - nodeID;            // hackish way to get destination ID, assuming only two bots used
+    ForwardPacket(dst_id, command, data);
   }
   
+}
+
+
+/*
+  JUR: Forward received packet to the second car
+*/
+void ForwardPacket(uint8_t dst, uint8_t command, uint8_t *data)
+{
+  uint8_t packet[3];
+  packet[0] = command;
+  packet[1] = data[1];
+  packet[2] = data[0];
+
+  CreatePacket(BOT_ID, dst, 0, sizeof(packet), packet);
 }
