@@ -22,8 +22,8 @@ def eucledianDistanceBetweenNodes():
 		startnode=edge[0] 
 		endnode=edge[1]
 		lengths[edge]=round(math.sqrt(((pos[endnode][1]-pos[startnode][1])**2)+((pos[endnode][0]-pos[startnode][0])**2)),2)
-	plt.bar(range(len(lengths.keys())), list(lengths.values()), color='g')
-	plt.show()
+	#plt.bar(range(len(lengths.keys())), list(lengths.values()), color='g')
+	#plt.show()
 	return lengths
 
 
@@ -50,40 +50,86 @@ def shortestPath(AdjacencyMatrix,sourceNode):
 	visitedList = []
 	sourceList = []
 	intermediateList = []
+	costList = []
 	
 	sourceList += ([999] * numberOfNodes) # stores the lenght of the shrtest path but strats out with all 999 values(djikstra)
 	sourceList[sourceNode] = (min(sourceList[sourceNode],0))
 	
+	
 	intermediateList += ([999] * numberOfNodes) #stores the first nexthop in the shortest path
 	intermediateList[sourceNode] = sourceNode #for the source node it's next hop is itself (this is the condition to stop routing)
+			
+	Q = [i for i in range(numberOfNodes)]
+	u = sourceNode
 	
-	
-	for row in AdjacencyMatrix[sourceNode]: #loops through the node in question(i.e. that row of the adjacency matrix)
-		if row == 1: #finds neighbours of source node
-			sourceList[i] = (min(sourceList[i],row)) #set distance to 1 in source list
-			intermediateList[i] = i #add this node to the path list
-		i+=1
+	while Q:
+		Q.remove(u)
+		#u is newest removed member
+		
+		check = [value for value in AdjacencyMatrix[u] if value > 0 and AdjacencyMatrix[u].index(value) in Q]
+		if check:
+			i = 0
+			for row in AdjacencyMatrix[u]:
+				#k = AdjacencyMatrix[u].index(min(check))
+				if row > 0:
+					if (min(sourceList[i],row+sourceList[u])) == (row + sourceList[u]):
+						sourceList[i] = (min(sourceList[i],AdjacencyMatrix[u][i]+sourceList[u]))
+						intermediateList[i] = u #add this node to the path list
+				i+=1
+				
+		value = {}
+		for k in range(numberOfNodes):
+
+			if k in Q:
+				value.update({k:sourceList[k]})
+		if value:
+			u = min(value, key =value.get)
+		else:
+			if len(Q) == 1:
+				Q.remove(Q[0])
+		
+		#u = k
+		#print k
+		#print ("Q list",Q)
+			
 		
 		
-	while 999 in sourceList:
+	'''while 999 in sourceList:
 		j = 0
 		for row in sourceList:
 			k = 0
-			if row == m:			#for rows that have been found to be neighbours...and then iterates for neighbours of neighbours..ati be be lo	
+			if row < 999:
 				for val in AdjacencyMatrix[j]:
-					if val == 1:
-						if (min(sourceList[k],(m+1)*val)) == (m+1)*val:
-							sourceList[k] = (min(sourceList[k],(m+1)*val))
-							intermediateList[k] = intermediateList[j] #copy the path to its predecessor
-							#intermediateList[k].append(intermediateList[j][-1])
+					if val > 0:
+						if (min(sourceList[k],val+row)) == val+row:
+							sourceList[k] = (min(sourceList[k],val+row))
+							intermediateList[k] = j
 					k += 1
-			j+=1
-		m+=1
+			j+=1'''
+		
+
 	
-	visitedList = intermediateList
+	#reconstruct path
+	pathTaken = [[] for i in range(numberOfNodes)]
+		
+	p = 0
+	count = 0
+	for element in intermediateList:
+		elementValue = element
+		pathTaken[p].append(p)
+		pathTaken[p].append(elementValue)
+		while pathTaken[p][-1] != sourceNode:
+			pathTaken[p].append(intermediateList[elementValue])
+			elementValue = intermediateList[elementValue]
+		p+=1
+		#count +=1 
+					
+	for i in range(numberOfNodes):
+		visitedList.append(pathTaken[i][-2])
 	#print(sourceNode)
-	#print(sourceList)
-	#print(intermediateList)
+	#print("Cost List is", sourceList)
+	#print("Path Taken is", pathTaken)
+	#print("Visited List is", visitedList)
 	
 	return visitedList
 	
@@ -124,13 +170,38 @@ class adHocNode(object):
     
 def main():
 	
+	editGraphDistance()
+
+	#this series of actions provides the adjacency matrix as a list of lists
+	#so we can iterated through them for paths and rputing later
+	AdjacencyMatrix = nx.adjacency_matrix(g)
+	AdjacencyMatrix = nx.to_numpy_matrix(g)
+	AdjacencyMatrix = AdjacencyMatrix.tolist()
+
+
+	path = [] #path that packet takes. saved as a list for the plot
+
+
+	labels = [g[u][v]['weight'] for u,v in g.edges]
+	weights = nx.get_edge_attributes(g,'weight')
+	nx.draw(g,pos, node_color='green', edge_color='grey', width=labels, with_labels = True, alpha = 0.5)
+	nx.draw_networkx_edge_labels(g,pos,edge_labels = weights)
+	plt.show()  
+
+
+	#initialise elements
+	typeFlag, source, destination, sequence, metric, intermediary,data = 1,1,1,1,1,1,1
+	packet = [typeFlag, source, destination, sequence, metric, intermediary,data]
+		
+	
 	path = [] #path that packet takes. saved as a list for the plot
 	color_map = []
 	
 	nodeList = []
 	for i in range(numberOfNodes):
 		nodeList.append(adHocNode(i))
-		
+	
+	#print(nodeList)
 	destinationList = []
 	destinationList.extend(range(numberOfNodes))
 			
@@ -141,6 +212,8 @@ def main():
 		#print item.MACAddress
 		#print item.rDestination
 		#print item.rNextHop
+  
+	
 		
 	#user input source and destination and data
 	print("Got a message to send?")
@@ -165,10 +238,15 @@ def main():
 		plt.gcf().clear()
 		path1.append(path[i])
 		#print("inloop")
-		nx.draw(g,pos, node_color='green', edge_color='grey', with_labels = True, alpha = 0.5)
+		
+		labels = [g[u][v]['weight'] for u,v in g.edges]
+		weights = nx.get_edge_attributes(g,'weight')
+		nx.draw(g,pos, node_color='green', edge_color='grey', width=labels, with_labels = True, alpha = 0.5)
+		nx.draw_networkx_edge_labels(g,pos,edge_labels = weights)
+		
 		path_edges = zip(path,path[1:])
 		nx.draw_networkx_nodes(g,pos,nodelist=path1,node_color='blue')
-		nx.draw_networkx_edges(g,pos,edgelist=path_edges,edge_color='purple',width=1)
+		nx.draw_networkx_edges(g,pos,edgelist=path_edges,edge_color='purple')
 			
 		plt.draw()
 		plt.pause(1)
@@ -178,45 +256,10 @@ def main():
 	#return path	
 	
 
-def plotPath(i):
-	
-	path_edges = zip(path,path[1:])
-	nx.draw_networkx_nodes(g,pos,nodelist=path[i],node_color='blue')
-	#nx.draw_networkx_edges(g,pos,edgelist=path_edges[i],edge_color='purple',width=5)
-		
-
-
-
-
-
-editGraphDistance()
-
-#this series of actions provides the adjacency matrix as a list of lists
-#so we can iterated through them for paths and rputing later
-AdjacencyMatrix = nx.adjacency_matrix(g)
-AdjacencyMatrix = nx.to_numpy_matrix(g)
-AdjacencyMatrix = AdjacencyMatrix.tolist()
-
-path = [] #path that packet takes. saved as a list for the plot
-
-# Build plot
-#fig, ax = plt.subplots(figsize=(6,4))
-
-labels = nx.get_edge_attributes(g,'weight')
-nx.draw(g,pos, node_color='green', edge_color='grey', edge_labels=labels, with_labels = True, alpha = 0.5)
-plt.show()  
-
-
-#initialise elements
-typeFlag, source, destination, sequence, metric, intermediary,data = 1,1,1,1,1,1,1
-packet = [typeFlag, source, destination, sequence, metric, intermediary,data]
 
 main()
 
+#remove a node and repeat process
+g.remove_node(1)
+numberOfNodes -= 1
 
-
-
-#ani = animation.FuncAnimation(fig, plotPath, frames = range(len(path)),repeat=True)
-#plt.show()
-#plt.draw()
-#plt.show()
