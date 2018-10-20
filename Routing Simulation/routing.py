@@ -4,15 +4,7 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import numpy, math
 #import seaborn as sns
-
-
-numberOfNodes = int(raw_input("How many nodes are in the graph?"))
-probability = float(raw_input("what is the probability of edge existence?"))
-
-g = nx.erdos_renyi_graph(numberOfNodes,probability)
-pos = nx.spring_layout(g) #define graph layput so node positions stay the same from plot to plot
-
-
+'''
 def eucledianDistanceBetweenNodes():
 	#this function takes the graph as input and finds eucledian distance between each nodes with a link
 	#this is used later when we delete links between nodes that are too far apart
@@ -43,7 +35,7 @@ def editGraphDistance():
 		endnode = edge[1]
 		g[startnode][endnode]['weight']=random.randint(1,11)
 
-
+'''
 def shortestPath(AdjacencyMatrix,sourceNode):
 	i = 0 
 	m = 1 #used to increasingly find neighbours of neighbours
@@ -168,10 +160,8 @@ class adHocNode(object):
 			#updateTable(Packet)
 		
     
-def main():
+def main(g):
 	
-	editGraphDistance()
-
 	#this series of actions provides the adjacency matrix as a list of lists
 	#so we can iterated through them for paths and rputing later
 	AdjacencyMatrix = nx.adjacency_matrix(g)
@@ -257,9 +247,8 @@ def main():
 	
 
 
-main()
 
 #remove a node and repeat process
-g.remove_node(1)
-numberOfNodes -= 1
+#g.remove_node(1)
+#numberOfNodes -= 1
 
