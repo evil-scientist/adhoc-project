@@ -6,8 +6,8 @@ import numpy, math
 #import seaborn as sns
 
 
-numberOfNodes = int(raw_input("How many nodes are in the graph?"))
-probability = float(raw_input("what is the probability of edge existence?"))
+numberOfNodes = int(input("How many nodes are in the graph?"))
+probability = float(input("what is the probability of edge existence?"))
 
 g = nx.erdos_renyi_graph(numberOfNodes,probability)
 pos = nx.spring_layout(g) #define graph layput so node positions stay the same from plot to plot
@@ -218,8 +218,8 @@ def main():
 	#user input source and destination and data
 	print("Got a message to send?")
 	print("Follow the prompt")
-	source = int(raw_input("What is the source node?"))
-	destination = int(raw_input("What is the destination?"))
+	source = int(input("What is the source node?"))
+	destination = int(input("What is the destination?"))
 	
 	
 	#nx.draw(g,pos, node_color='green', edge_color='grey', with_labels = True, alpha = 0.5) #draw the network
