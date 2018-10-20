@@ -4,8 +4,8 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import numpy, math
 #import seaborn as sns
-'''
-def eucledianDistanceBetweenNodes():
+
+def eucledianDistanceBetweenNodes(g,pos):
 	#this function takes the graph as input and finds eucledian distance between each nodes with a link
 	#this is used later when we delete links between nodes that are too far apart
 	#this adds a distance dependence to the random graph geenrated
@@ -19,9 +19,9 @@ def eucledianDistanceBetweenNodes():
 	return lengths
 
 
-def editGraphDistance():
+def editGraphDistance(g,pos):
 	#this function deletes edges that are longer than 1/2 the maximum edge length that was randomly generated
-	lengths = eucledianDistanceBetweenNodes()
+	lengths = eucledianDistanceBetweenNodes(g,pos)
 	maximumDistance = max(list(lengths.values()))
 	#print (lengths)
 	for i,j in lengths.items():
@@ -35,7 +35,7 @@ def editGraphDistance():
 		endnode = edge[1]
 		g[startnode][endnode]['weight']=random.randint(1,11)
 
-'''
+
 def shortestPath(AdjacencyMatrix,sourceNode):
 	i = 0 
 	m = 1 #used to increasingly find neighbours of neighbours
@@ -84,22 +84,6 @@ def shortestPath(AdjacencyMatrix,sourceNode):
 		#print k
 		#print ("Q list",Q)
 			
-		
-		
-	'''while 999 in sourceList:
-		j = 0
-		for row in sourceList:
-			k = 0
-			if row < 999:
-				for val in AdjacencyMatrix[j]:
-					if val > 0:
-						if (min(sourceList[k],val+row)) == val+row:
-							sourceList[k] = (min(sourceList[k],val+row))
-							intermediateList[k] = j
-					k += 1
-			j+=1'''
-		
-
 	
 	#reconstruct path
 	pathTaken = [[] for i in range(numberOfNodes)]
@@ -160,7 +144,7 @@ class adHocNode(object):
 			#updateTable(Packet)
 		
     
-def main(g):
+def mainRoute(g,pos):
 	
 	#this series of actions provides the adjacency matrix as a list of lists
 	#so we can iterated through them for paths and rputing later
@@ -170,6 +154,8 @@ def main(g):
 
 
 	path = [] #path that packet takes. saved as a list for the plot
+	
+	editGraphDistance(g,pos)
 
 
 	labels = [g[u][v]['weight'] for u,v in g.edges]

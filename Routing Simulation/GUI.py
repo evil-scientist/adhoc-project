@@ -81,7 +81,7 @@ def graphPress(button):
     if button == 'Cancel.':
         app.hideSubWindow('Scale Free Graph')
     else:
-        main(g)
+        routing.mainRoute(g,pos)
 
 ###<<< Scale Free Graph Window >>>###
 app.startSubWindow('Graph', modal=True)
