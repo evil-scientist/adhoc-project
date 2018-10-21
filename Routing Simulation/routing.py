@@ -15,23 +15,6 @@ def eucledianDistanceBetweenNodes(g,pos):
 		endnode=edge[1]
 		lengths[edge]=round(math.sqrt(((pos[endnode][1]-pos[startnode][1])**2)+((pos[endnode][0]-pos[startnode][0])**2)),2)	
 	return lengths
-
-def plotDistribution(g,pos):
-	lengths = eucledianDistanceBetweenNodes(g,pos)
-	plt.bar(range(len(lengths.keys())), list(lengths.values()), color='g')
-	plt.ylabel('Link Probability')
-	plt.xlabel('Number of Nodes')	
-	plt.title('Link Probability Distribution')	
-	plt.show()
-
-def plotGraph(g,pos):
-	labels = [g[u][v]['weight'] for u,v in g.edges]
-	weights = nx.get_edge_attributes(g,'weight')
-	nx.draw(g,pos, node_color='green', edge_color='grey', width=labels, with_labels = True, alpha = 0.5)
-	nx.draw_networkx_edge_labels(g,pos,edge_labels = weights)
-	plt.title('Network Graph')
-	plt.show()
-
 	
 def editGraphDistance(g,pos):
 	#this function deletes edges that are longer than 1/2 the maximum edge length that was randomly generated
@@ -49,6 +32,21 @@ def editGraphDistance(g,pos):
 		endnode = edge[1]
 		g[startnode][endnode]['weight']=random.randint(1,11)
 
+def plotDistribution(g,pos):
+	lengths = eucledianDistanceBetweenNodes(g,pos)
+	plt.bar(range(len(lengths.keys())), list(lengths.values()), color='g')
+	plt.ylabel('Link Probability')
+	plt.xlabel('Number of Nodes')	
+	plt.title('Link Probability Distribution')	
+	plt.show()
+
+def plotGraph(g,pos):
+	labels = [g[u][v]['weight'] for u,v in g.edges]
+	weights = nx.get_edge_attributes(g,'weight')
+	nx.draw(g,pos, node_color='green', edge_color='grey', width=labels, with_labels = True, alpha = 0.5)
+	nx.draw_networkx_edge_labels(g,pos,edge_labels = weights)
+	plt.title('Network Graph')
+	plt.show()
 
 def shortestPath(AdjacencyMatrix,sourceNode,numberOfNodes):
 	i = 0 
@@ -188,13 +186,10 @@ def listRoute(g,pos,numberOfNodes):
 		print (item.rDestination)
 		print (item.rNextHop)
   			
-	
+	return nodeList
+
+def routeRoute(g,pos,nodeList, source, destination):
 	path = [] #path that packet takes. saved as a list for the plot		
-	#user input source and destination and data
-	print("Got a message to send?")
-	print("Follow the prompt")
-	source = int(input("What is the source node?"))
-	destination = int(input("What is the destination?"))
 	#nx.draw(g,pos, node_color='green', edge_color='grey', with_labels = True, alpha = 0.5) #draw the network
 	path.append(source)
 	while ((nodeList[source].rNextHop[destination])!=(nodeList[source].rNextHop[source])):
@@ -205,6 +200,7 @@ def listRoute(g,pos,numberOfNodes):
 	print (path)
 	return path
 	
+
 def showRoute(g,pos,path):
 	path1=[]
 	for i in range(len(path)):

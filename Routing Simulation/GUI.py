@@ -60,6 +60,8 @@ def getDataRandom(button):
 		g = nx.erdos_renyi_graph(numberOfNodes,probability)
 		pos = nx.spring_layout(g) #define graph layput so node positions stay the same from plot to plot
 		routing.plotDistribution(g,pos)
+		#routing.editGraphDistance(g,pos)
+        
 
 ###<<< Random Graph Window >>>###
 app.startSubWindow('Random Graph', modal=True)
@@ -85,8 +87,10 @@ def graphPress(button):
         routing.editGraphDistance(g,pos)
         routing.plotGraph(g,pos)
     else:        
-        path = routing.listRoute(g,pos,numberOfNodes)
-        routing.showRoute(g,pos,path)	
+        global nodeList        
+        nodeList = routing.listRoute(g,pos,numberOfNodes)
+        app.hideSubWindow('Graph')
+        app.showSubWindow('Routing')
 
 ###<<< Graph Window >>>###
 app.startSubWindow('Graph', modal=True)
@@ -99,6 +103,35 @@ app.setLabelFg('title4','white')
 #Buttons
 app.addButtons(['Show Graph','Route'],graphPress)
 app.setButtonFont(16,'Times')
+app.stopSubWindow()
+###<<<------------------->>>###
+
+#Routing Window        
+def getRoute(button):
+	if button == 'Exit':
+		app.hideSubWindow('Routing')
+		app.showSubWindow('Graph')
+	else:
+		source = int(app.getEntry('Source Node'))
+		destination = int(app.getEntry('Destination Node'))
+		path = routing.routeRoute(g,pos,nodeList,source,destination)        	
+		#routing.showRoute(g,pos,path)	
+
+###<<< Routing Window >>>###
+app.startSubWindow('Routing', modal=True)
+app.setBg('Orange')
+app.setGeometry("400x200")
+app.setFont(18)
+app.addLabel('title5','    Random Graph Mode    ')
+app.setLabelBg('title5','blue')
+app.setLabelFg('title5','white')
+#Label Entries
+app.addLabelEntry('Source Node')
+app.addLabelEntry('Destination Node')
+#Buttons
+app.addButtons(['Show Route','Exit'],getRoute)
+app.setButtonFont(16,'Times')
+app.setFocus('Source Node')
 app.stopSubWindow()
 ###<<<------------------->>>###
 '''
