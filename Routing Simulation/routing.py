@@ -13,12 +13,26 @@ def eucledianDistanceBetweenNodes(g,pos):
 	for edge in g.edges():
 		startnode=edge[0] 
 		endnode=edge[1]
-		lengths[edge]=round(math.sqrt(((pos[endnode][1]-pos[startnode][1])**2)+((pos[endnode][0]-pos[startnode][0])**2)),2)
-	#plt.bar(range(len(lengths.keys())), list(lengths.values()), color='g')
-	#plt.show()
+		lengths[edge]=round(math.sqrt(((pos[endnode][1]-pos[startnode][1])**2)+((pos[endnode][0]-pos[startnode][0])**2)),2)	
 	return lengths
 
+def plotDistribution(g,pos):
+	lengths = eucledianDistanceBetweenNodes(g,pos)
+	plt.bar(range(len(lengths.keys())), list(lengths.values()), color='g')
+	plt.ylabel('Link Probability')
+	plt.xlabel('Number of Nodes')	
+	plt.title('Link Probability Distribution')	
+	plt.show()
 
+def plotGraph(g,pos):
+	labels = [g[u][v]['weight'] for u,v in g.edges]
+	weights = nx.get_edge_attributes(g,'weight')
+	nx.draw(g,pos, node_color='green', edge_color='grey', width=labels, with_labels = True, alpha = 0.5)
+	nx.draw_networkx_edge_labels(g,pos,edge_labels = weights)
+	plt.title('Network Graph')
+	plt.show()
+
+	
 def editGraphDistance(g,pos):
 	#this function deletes edges that are longer than 1/2 the maximum edge length that was randomly generated
 	lengths = eucledianDistanceBetweenNodes(g,pos)
@@ -36,7 +50,7 @@ def editGraphDistance(g,pos):
 		g[startnode][endnode]['weight']=random.randint(1,11)
 
 
-def shortestPath(AdjacencyMatrix,sourceNode):
+def shortestPath(AdjacencyMatrix,sourceNode,numberOfNodes):
 	i = 0 
 	m = 1 #used to increasingly find neighbours of neighbours
 	visitedList = []
@@ -144,33 +158,18 @@ class adHocNode(object):
 			#updateTable(Packet)
 		
     
-def mainRoute(g,pos):
+def listRoute(g,pos,numberOfNodes):
 	
 	#this series of actions provides the adjacency matrix as a list of lists
 	#so we can iterated through them for paths and rputing later
 	AdjacencyMatrix = nx.adjacency_matrix(g)
 	AdjacencyMatrix = nx.to_numpy_matrix(g)
 	AdjacencyMatrix = AdjacencyMatrix.tolist()
-
-
-	path = [] #path that packet takes. saved as a list for the plot
-	
-	editGraphDistance(g,pos)
-
-
-	labels = [g[u][v]['weight'] for u,v in g.edges]
-	weights = nx.get_edge_attributes(g,'weight')
-	nx.draw(g,pos, node_color='green', edge_color='grey', width=labels, with_labels = True, alpha = 0.5)
-	nx.draw_networkx_edge_labels(g,pos,edge_labels = weights)
-	plt.show()  
-
-
+  
 	#initialise elements
 	typeFlag, source, destination, sequence, metric, intermediary,data = 1,1,1,1,1,1,1
 	packet = [typeFlag, source, destination, sequence, metric, intermediary,data]
-		
-	
-	path = [] #path that packet takes. saved as a list for the plot
+			
 	color_map = []
 	
 	nodeList = []
@@ -184,22 +183,19 @@ def mainRoute(g,pos):
 	
 	for item in nodeList:
 		item.rDestination = destinationList
-		item.rNextHop = shortestPath(AdjacencyMatrix,item.MACAddress)
-		#print item.MACAddress
-		#print item.rDestination
-		#print item.rNextHop
-  
+		item.rNextHop = shortestPath(AdjacencyMatrix,item.MACAddress,numberOfNodes)
+		print (item.MACAddress)
+		print (item.rDestination)
+		print (item.rNextHop)
+  			
 	
-		
+	path = [] #path that packet takes. saved as a list for the plot		
 	#user input source and destination and data
 	print("Got a message to send?")
 	print("Follow the prompt")
-	source = int(raw_input("What is the source node?"))
-	destination = int(raw_input("What is the destination?"))
-	
-	
+	source = int(input("What is the source node?"))
+	destination = int(input("What is the destination?"))
 	#nx.draw(g,pos, node_color='green', edge_color='grey', with_labels = True, alpha = 0.5) #draw the network
-	
 	path.append(source)
 	while ((nodeList[source].rNextHop[destination])!=(nodeList[source].rNextHop[source])):
 		nextHop = nodeList[source].rNextHop[destination]
@@ -207,9 +203,10 @@ def mainRoute(g,pos):
 		nodeList[source].sendPacket(nodeList[source].createPacket(1,source,destination,[],[],nextHop,"yes") )
 		source = nextHop
 	print (path)
+	return path
 	
+def showRoute(g,pos,path):
 	path1=[]
-	
 	for i in range(len(path)):
 		plt.gcf().clear()
 		path1.append(path[i])
@@ -228,11 +225,6 @@ def mainRoute(g,pos):
 		plt.pause(1)
 		
 	plt.show()
-			
-	#return path	
-	
-
-
 
 #remove a node and repeat process
 #g.remove_node(1)
