@@ -59,8 +59,9 @@ def getDataRandom(button):
 		global pos 
 		g = nx.erdos_renyi_graph(numberOfNodes,probability)
 		pos = nx.spring_layout(g) #define graph layput so node positions stay the same from plot to plot
+		g = routing.editGraphDistance(g,pos)
 		routing.plotDistribution(g,pos)
-		#routing.editGraphDistance(g,pos)
+		
         
 
 ###<<< Random Graph Window >>>###
@@ -84,7 +85,7 @@ app.stopSubWindow()
 #Graph Window        
 def graphPress(button):
     if button == 'Show Graph':
-        routing.editGraphDistance(g,pos)
+        #routing.editGraphDistance(g,pos)
         routing.plotGraph(g,pos)
     else:        
         global nodeList        
@@ -115,7 +116,7 @@ def getRoute(button):
 		source = int(app.getEntry('Source Node'))
 		destination = int(app.getEntry('Destination Node'))
 		path = routing.routeRoute(g,pos,nodeList,source,destination)        	
-		#routing.showRoute(g,pos,path)	
+		routing.showRoute(g,pos,path)	
 
 ###<<< Routing Window >>>###
 app.startSubWindow('Routing', modal=True)

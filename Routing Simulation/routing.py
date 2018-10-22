@@ -31,6 +31,8 @@ def editGraphDistance(g,pos):
 		startnode = edge[0]
 		endnode = edge[1]
 		g[startnode][endnode]['weight']=random.randint(1,11)
+		
+	return g
 
 def plotDistribution(g,pos):
 	lengths = eucledianDistanceBetweenNodes(g,pos)
@@ -83,11 +85,10 @@ def shortestPath(AdjacencyMatrix,sourceNode,numberOfNodes):
 				
 		value = {}
 		for k in range(numberOfNodes):
-
 			if k in Q:
 				value.update({k:sourceList[k]})
 		if value:
-			u = min(value, key =value.get)
+			u = min(value,key =value.get)
 		else:
 			if len(Q) == 1:
 				Q.remove(Q[0])
@@ -103,17 +104,21 @@ def shortestPath(AdjacencyMatrix,sourceNode,numberOfNodes):
 	p = 0
 	count = 0
 	for element in intermediateList:
-		elementValue = element
-		pathTaken[p].append(p)
-		pathTaken[p].append(elementValue)
-		while pathTaken[p][-1] != sourceNode:
-			pathTaken[p].append(intermediateList[elementValue])
-			elementValue = intermediateList[elementValue]
+		if element != 999:
+			elementValue = element
+			pathTaken[p].append(p)
+			pathTaken[p].append(elementValue)
+			while pathTaken[p][-1] != sourceNode:
+				pathTaken[p].append(intermediateList[elementValue])
+				elementValue = intermediateList[elementValue]
 		p+=1
 		#count +=1 
 					
 	for i in range(numberOfNodes):
-		visitedList.append(pathTaken[i][-2])
+		if pathTaken[i]:
+			visitedList.append(pathTaken[i][-2])
+		else:
+			visitedList.append(999)
 	#print(sourceNode)
 	#print("Cost List is", sourceList)
 	#print("Path Taken is", pathTaken)
@@ -193,10 +198,14 @@ def routeRoute(g,pos,nodeList, source, destination):
 	#nx.draw(g,pos, node_color='green', edge_color='grey', with_labels = True, alpha = 0.5) #draw the network
 	path.append(source)
 	while ((nodeList[source].rNextHop[destination])!=(nodeList[source].rNextHop[source])):
-		nextHop = nodeList[source].rNextHop[destination]
-		path.append(nextHop)
-		nodeList[source].sendPacket(nodeList[source].createPacket(1,source,destination,[],[],nextHop,"yes") )
-		source = nextHop
+		if nodeList[source].rNextHop[destination] == 999:
+			print("There is no path between these nodes. Graph disconnected")
+			break
+		else:
+			nextHop = nodeList[source].rNextHop[destination]
+			path.append(nextHop)
+			nodeList[source].sendPacket(nodeList[source].createPacket(1,source,destination,[],[],nextHop,"yes") )
+			source = nextHop
 	print (path)
 	return path
 	
@@ -213,7 +222,7 @@ def showRoute(g,pos,path):
 		nx.draw(g,pos, node_color='green', edge_color='grey', width=labels, with_labels = True, alpha = 0.5)
 		nx.draw_networkx_edge_labels(g,pos,edge_labels = weights)
 		
-		path_edges = zip(path,path[1:])
+		path_edges = list(zip(path,path[1:]))
 		nx.draw_networkx_nodes(g,pos,nodelist=path1,node_color='blue')
 		nx.draw_networkx_edges(g,pos,edgelist=path_edges,edge_color='purple')
 			
