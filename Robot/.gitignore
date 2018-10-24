@@ -1,0 +1,5 @@
+.pioenvs
+.vscode
+builds
+.travis.yml
+platformio.ini
