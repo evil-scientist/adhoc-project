@@ -630,7 +630,7 @@ void setup() {
 
 void loop() {
 
-  int noBytes = Udp.read(packetBuffer, sizeof(packetBuffer));     // JUR: long shot if it works...
+  int noBytes = Udp.read(packetBuffer, sizeof(packetBuffer));
 
   Adhoc.recvBytes = noBytes;
 
@@ -689,8 +689,6 @@ void onPacket(const uint8_t* buffer, size_t size)
   // Make a temporary buffer
   char tmp[size];
   memcpy(tmp, buffer, size);
-  //Serial.println("Serial packet received from Arduino");
-  //Adhoc.print_packet(tmp,size);
 
 #ifdef __DEBUG__
   Serial.println("");
@@ -699,8 +697,6 @@ void onPacket(const uint8_t* buffer, size_t size)
 #endif
 
   if (!Adhoc.is_valid(tmp)) {
-    Serial.println("Doesnot contain start byte rejecting");
-
 #ifdef __DEBUG__
     Serial.println("Doesnot contain start byte rejecting");
 #endif
