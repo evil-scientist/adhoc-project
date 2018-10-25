@@ -182,10 +182,9 @@ void read_file() {
 
 /* Function to extract data
  * from the packet */
-
 char *get_data(char packet[]) {
     int i;
-    char len = packet[PACKET_DATA_LENGTH_LOC];
+    char len = packet[PACKET_DATA_LENGTH_LOC + 1];          // JUR: the +1 was missing in original!
     char *data = (char *)malloc(len * sizeof(char));
     for(i = 0 ; i < len ; i++) {
         data[i] = packet[PACKET_DATA_LOC + 1 + i];
@@ -572,7 +571,7 @@ void calibrate_bot(int src, int dst, int n_samples)
         return;
     }
 
-    unsigned char *resp_data = get_data(client_message);
+    char *resp_data = get_data(client_message);
     printf("Received data: %d\n" , resp_data[0]);
 
 }

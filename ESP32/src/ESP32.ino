@@ -668,20 +668,18 @@ void send_RSSI(char packet[], bool isTCP) {
 void send_calibration_next()
 {
 
-  char packet[11];
-  packet[0]                           = 0x80;           // Start marker
-  packet[PACKET_START_BYTE_LOC]       = START_BYTE;
-  packet[PACKET_SRC_LOC]              = Adhoc.ID_SELF;
-  packet[PACKET_DST_LOC]              = 0;              // server
-  packet[PACKET_INTERMEDIATE_SRC_LOC] = 0;
-  packet[PACKET_INTERNAL_CMD_LOC]     = 0;
-  packet[PACKET_COUNTER_HIGH_LOC]     = 0;
-  packet[PACKET_COUNTER_LOW_LOC]      = 0;
-  packet[PACKET_DATA_LENGTH_LOC]      = 1;
-  packet[PACKET_DATA_LOC]             = NEXT_POSITION;
-  packet[11]                          = 0x81;           // End marker
-
-  // What about start and end markers?
+  unsigned char packet[11];
+  packet[0]                              = 0x80;           // Start marker
+  packet[PACKET_START_BYTE_LOC +1]       = START_BYTE;
+  packet[PACKET_SRC_LOC +1]              = Adhoc.ID_SELF;
+  packet[PACKET_DST_LOC +1]              = 0;              // server
+  packet[PACKET_INTERMEDIATE_SRC_LOC +1] = 0;
+  packet[PACKET_INTERNAL_CMD_LOC +1]     = 0;
+  packet[PACKET_COUNTER_HIGH_LOC +1]     = 0;
+  packet[PACKET_COUNTER_LOW_LOC +1]      = 0;
+  packet[PACKET_DATA_LENGTH_LOC +1]      = 1;
+  packet[PACKET_DATA_LOC +1]             = NEXT_POSITION;  // testing without macro for now NEXT_POSITION
+  packet[10]                             = 0x81;           // End marker
 
   client.write(packet, sizeof(packet));
   Serial.println("Sent calibration_next packet to server!\n");
@@ -691,6 +689,7 @@ void send_calibration_ok()
 {
 
 }
+
 
 
 

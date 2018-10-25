@@ -20,11 +20,10 @@ extern unsigned int con_count;
 int *client_sock;
 
 char cmd[32];
-char client_message[1024];
+unsigned char client_message[1024];
 
 #define START_MARKER 0x80
 #define END_MARKER 0x81
-
 
 
 /* Declarations */

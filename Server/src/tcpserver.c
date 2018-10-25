@@ -172,9 +172,11 @@ int main(int argc , char *argv[])
                 read_file();
                 break;
             case 12:
+                printf("\n");
                 printf("Place the robot 1m from the AP\n");
-                printf("Enter the desired number of RSSI samples for averaging");
+                printf("Enter the desired number of RSSI samples for averaging: ");
                 scanf("%d", &val);
+                printf("\n");
 
                 calibrate_bot(src_id, dst_id, val);
                 break;
