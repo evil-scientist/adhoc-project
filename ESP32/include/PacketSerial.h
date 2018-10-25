@@ -30,7 +30,6 @@
 #include "SLIP.h"
 
 #define UBRR2H;
-//HardwareSerial Serial2(2);
 
 template<typename EncoderType, uint8_t PacketMarker = 0, int BufferSize = 256>
 class PacketSerial_

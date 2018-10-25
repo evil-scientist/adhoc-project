@@ -18,8 +18,6 @@ void ESP32Adhoc::Debug(String str) {
  * returns 1 if packet begins with start byte
  * else returns zero
  */
-
-
 int ESP32Adhoc::is_valid(char packet[]) {
 
 #ifdef __DEBUG__

@@ -75,7 +75,6 @@ int main(int argc , char *argv[])
     listen(socket_desc , 3);
 
     //Accept and incoming connection
-
     while(con_count != NUM_CONNECTIONS) {
 
         c = sizeof(struct sockaddr_in);
@@ -107,16 +106,13 @@ int main(int argc , char *argv[])
     
         printf("Enter the command(1-12) to the bot-%d : \n",dst_id);
 
-
         printf("  1. Move forward \n"); 
         printf("  2. Move forward for time in seconds \n"); 
         printf("  3. Move reverse \n"); 
         printf("  4. Move reverse for time in seconds \n"); 
         printf("  5. Move left time\n"); 
         printf("  6. Move right time\n"); 
-        printf("  7. Stop the bot\n"); 
- //       printf("  8. Get obstacle distance left \n"); 
- //       printf("  9. Get obstacle distance right\n"); 
+        printf("  7. Stop the bot\n");
         printf("  8. Get obstacle distance front\n"); 
         printf("  9. Get RSSI value\n");
         printf("  10. Get ID\n");
@@ -157,15 +153,6 @@ int main(int argc , char *argv[])
                 printf("Sending command to stop the bot\n");
                 stop_bot(src_id,dst_id);   
                 break;
-/*            case 8:
-                printf("Fetchng left obstacle sensor information  \n");
-                printf("Left Obtacle sensor reading : %d\n",get_obstacle_data(src_id,dst_id,ULTRASONIC_LEFT));
-                break;
-            case 9:
-                printf("Fetchng right  obstacle sensor information \n");
-                printf("Right Obtacle sensor reading : %d\n",get_obstacle_data(src_id,dst_id,ULTRASONIC_RIGHT));
-                break; */
-
             case 8:
                 printf("Fetchng front obstacle sensor information \n");
                 printf("Front Obtacle sensor reading : %d\n",get_obstacle_data(src_id,dst_id,ULTRASONIC_FRONT));

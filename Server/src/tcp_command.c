@@ -441,7 +441,6 @@ int get_index(int val) {
  * Function used to create and send the 
  * packet from the server to the selected bot
  */
-
 void create_packet(int src,int dst, char length,char *data)
 {
     int l,i,j;
@@ -455,44 +454,46 @@ void create_packet(int src,int dst, char length,char *data)
         return;
     }
     
+    // Allocate memory for the packet
     packet=(char*)calloc(11 +length,sizeof(char));
 
+    // START MARKER + HEADER stuff
     packet[0]= START_MARKER;
     packet[PACKET_START_BYTE_LOC + 1] = 0xFF;
     packet[PACKET_SRC_LOC + 1] = src;
     packet[PACKET_DST_LOC + 1] = dst ;
     packet[PACKET_INTERMEDIATE_SRC_LOC + 1] = src; 
-    packet[PACKET_INTERNAL_CMD_LOC + 1] = 0b000 << 5|0b1 << 4|0b0 << 3|0b000; 
-    /* Forward packet and TCP set */
-    //packet[4] = 0x10; 
+    packet[PACKET_INTERNAL_CMD_LOC + 1] = 0b000 << 5|0b1 << 4|0b0 << 3|0b000;
     packet[PACKET_COUNTER_HIGH_LOC + 1] = counter << 8;
     packet[PACKET_COUNTER_LOW_LOC + 1] = counter & 0xFF;
     packet[PACKET_DATA_LENGTH_LOC + 1] = length;
     
     counter++;
-    //memcpy(packet+7,&data,length);
+    
+    // DATA
     for(l=0;l<length;l++)
     {
         packet[PACKET_DATA_LOC + 1 + l] = *(data+l);
-
     }
 
+    // END MARKER
     packet[11 + length - 1]= END_MARKER;
+
+
 #ifdef __DEBUG__
     printf(" Sending to sockfd %d\n",client_sock[client_index]);
 #endif
-    send_cmd(client_sock[client_index],packet,11 + length);
 
+    send_cmd(client_sock[client_index],packet,11 + length);
     free(packet);
 }
+
 
 /* 
  * Function used to create and send the 
  * packet only during initialization as ID is not yet known 
  *
  */
-
-
 void create_packet_ID(char length,char *data,int client_index)
 {
     int l,i,j;

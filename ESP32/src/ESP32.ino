@@ -177,7 +177,6 @@ void requestWifi()
 /* Function to send packet to Arduino
     over serial interface
 */
-
 void sendToArduino(char packet[], int numBytes) {
 
   uint8_t tmp[numBytes];
@@ -202,7 +201,6 @@ void adhoc_recv_filter(char packet[]) {
   char ACK = Adhoc.is_ACK(packet);
 
   if (src == Adhoc.ID_SELF ) {
-
     /* should not receive from myself */
 #ifdef __DEBUG__
     Serial.println("Receving from self ignored");
@@ -213,7 +211,6 @@ void adhoc_recv_filter(char packet[]) {
   /* Drop the packet if you cannot
      receive from this source
   */
-
   if (!Adhoc.can_rcv(inter)) {
     /* drop the packet */
 #ifdef __DEBUG__
@@ -225,9 +222,7 @@ void adhoc_recv_filter(char packet[]) {
   }
 
   /* Chck if self is the destination
-
   */
-
   if (Adhoc.ID_SELF == dst) {
 
 #ifdef __DEBUG__
@@ -237,7 +232,6 @@ void adhoc_recv_filter(char packet[]) {
     /* Check if entry for the packet already present
         Ignore if already present
     */
-
     if (Adhoc.is_record_present(counter, src, dst)) {
       int counter_index = Adhoc.get_table_index(counter);
 #ifdef __DEBUG__
@@ -250,7 +244,6 @@ void adhoc_recv_filter(char packet[]) {
       if (Adhoc.fwd_in_table(counter_index) && !Adhoc.ack_in_table(counter_index) && ACK) {
         /* Forward set in table and ACK not set in table and
             ACK in packet means
-
             I received the ACK for the packet i previously
             sent accept it
         */
@@ -262,7 +255,6 @@ void adhoc_recv_filter(char packet[]) {
 #endif
         /* Send to arduino */
         return;
-
       }
 
       if (Adhoc.fwd_in_table(counter_index) && !Adhoc.ack_in_table(counter_index) && !ACK) {
@@ -342,7 +334,6 @@ void adhoc_recv_filter(char packet[]) {
       again.
 
   */
-
 #ifdef __DEBUG__
   Serial.print("Checking if record for counter : ");
   Serial.print(counter);
@@ -584,12 +575,16 @@ void init_routine() {
 
 }
 
+
 void setup() {
 
+  // Hardware Serial (port 0) = USB
   Serial.begin(115200);
 
+  // Packet Serial (port 2) = Arudino
   serial.begin(115200, 2);
   serial.setPacketHandler(&onPacket);
+  
   delay(10);
 
 #ifdef __DEBUG__
@@ -598,27 +593,10 @@ void setup() {
 
   init_routine();
 
-  pinMode(BLELED, OUTPUT);
-  pinMode(WIFILED, OUTPUT);
-  pinMode(REDLED, OUTPUT);
-  digitalWrite(BLELED, LOW);
-  digitalWrite(WIFILED, LOW);
-  digitalWrite(REDLED, LOW);
-
-  //Setup timer
-  // Use 1st timer of 4 (counted from zero).
-  // Set 80 divider for prescaler
+  // JUR: TODO check why do we use this timer stuff?
   timer = timerBegin(0, 80, true);
-
-  // Attach onTimer function to our timer.
   timerAttachInterrupt(timer, &onTimer, true);
-
-  // Set alarm to call onTimer function (value in microseconds).
-  // Repeat the alarm (third parameter)
-  //trigger every 200ms
   timerAlarmWrite(timer, 200000, true);
-
-  // Start an alarm
   timerAlarmEnable(timer);
 
 #ifdef __DEBUG__
@@ -627,25 +605,24 @@ void setup() {
 }
 
 
-
 void loop() {
 
   int noBytes = Udp.read(packetBuffer, sizeof(packetBuffer));
-
   Adhoc.recvBytes = noBytes;
 
   if ( noBytes > 0 ) {
-    // Read the data from it
+
 #ifdef __DEBUG__
     Serial.println("Received bytes from UDP");
     Serial.print("Bytes count : ");
     Serial.println(noBytes, DEC);
 #endif
-    Adhoc.print_packet(packetBuffer, noBytes);
+
     Adhoc.recvBytes = noBytes;
     adhoc_recv_filter(packetBuffer);
 
-  } // end if
+  }
+
   recvWithStartEndMarkers();
   getTCPData();
   serial.update();
@@ -653,8 +630,6 @@ void loop() {
 
 
 /* TBD Hardcoding size for now */
-
-
 void send_RSSI(char packet[], bool isTCP) {
 
   long RSSI_val = Adhoc.get_RSSI();
@@ -922,12 +897,12 @@ void getTCPData() {
       Serial.print(" ");
     }
     Serial.println("");
-    //
+    
 #endif
-    //Serial.println(receivedChars);
+   
     numBytes = TCPBytes;
     TCPBytes = 0;
-    //client.print(buff);
+
     tcpBuffer = (char *)malloc(numBytes * sizeof(char));
     memcpy(tcpBuffer, receivedChars, numBytes);
 
@@ -937,17 +912,6 @@ void getTCPData() {
     }
 #ifdef __DEBUG__
     Adhoc.print_packet(tcpBuffer, numBytes);
-#endif
-
-#if 0
-    if (!Adhoc.get_src(tcpBuffer)) {
-#ifdef __DEBUG__
-      Serial.println("Source does not know the ID");
-      Serial.println("Send ID");
-#endif
-      client.print(Adhoc.ID_SELF, DEC);
-    }
-
 #endif
 
     /* This is not actually a TCP packet but
@@ -966,6 +930,7 @@ void getTCPData() {
       return;
     }
 
+    // JUR: I guess that means that request RSSI = 14?
     if (tcpBuffer[PACKET_DATA_LOC] == 0x0E) {
 #ifdef __DEBUG__
       Serial.println("Sending RSSI value to server");
@@ -973,9 +938,7 @@ void getTCPData() {
 
       send_RSSI(tcpBuffer, true);
       return;
-
     }
-    //check_data(tcpBuffer);
 
 #ifdef __DEBUG__
     Serial.println("Sending TCP Buffer to Arduino");
