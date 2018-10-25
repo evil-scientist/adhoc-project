@@ -173,7 +173,8 @@ int main(int argc , char *argv[])
                 break;
             case 12:
                 printf("Place the robot 1m from the AP and press any key\n");
-                scanf("%d", &val);
+                getchar();  // JUR: UGLY HACK - parse enter that is on stdin from before
+                getchar();
                 calibrate_bot(src_id, dst_id);
                 break;
             default:
