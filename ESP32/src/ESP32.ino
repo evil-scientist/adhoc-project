@@ -661,6 +661,39 @@ void send_RSSI(char packet[], bool isTCP) {
   }
 }
 
+
+/*
+  JUR: calibration process -> send packet calibration pt.1 done
+*/
+void send_calibration_next()
+{
+
+  char packet[11];
+  packet[0]                           = 0x80;           // Start marker
+  packet[PACKET_START_BYTE_LOC]       = START_BYTE;
+  packet[PACKET_SRC_LOC]              = Adhoc.ID_SELF;
+  packet[PACKET_DST_LOC]              = 0;              // server
+  packet[PACKET_INTERMEDIATE_SRC_LOC] = 0;
+  packet[PACKET_INTERNAL_CMD_LOC]     = 0;
+  packet[PACKET_COUNTER_HIGH_LOC]     = 0;
+  packet[PACKET_COUNTER_LOW_LOC]      = 0;
+  packet[PACKET_DATA_LENGTH_LOC]      = 1;
+  packet[PACKET_DATA_LOC]             = NEXT_POSITION;
+  packet[11]                          = 0x81;           // End marker
+
+  // What about start and end markers?
+
+  client.write(packet, sizeof(packet));
+  Serial.println("Sent calibration_next packet to server!\n");
+}
+
+void send_calibration_ok()
+{
+
+}
+
+
+
 void onPacket(const uint8_t* buffer, size_t size)
 {
   // Make a temporary buffer
@@ -946,14 +979,15 @@ void getTCPData() {
       Serial.println("Received calibrate command!\n");
 
       int n_samples = tcpBuffer[PACKET_DATA_LOC + 1];
-      Serial.println("No. samples to take:");
-      Serial.print(n_samples);
+      Serial.print("No. samples to take: ");
+      Serial.println(n_samples);
 
       // TODO: Send a packet to arduino -> LED indicating calibration state
       
       // GET AVG RSSI @ dist 1
 
       // Send packet to server -> next distance
+      send_calibration_next();
       
       delay(1000);  // simulating processing time
       return;
@@ -964,6 +998,8 @@ void getTCPData() {
       
       // GET AVG RSSI @ dist 2
       // calc pathloss exp
+
+      send_calibration_ok();
       
       calibrating = false;
       return;

@@ -559,7 +559,28 @@ void calibrate_bot(int src, int dst, int n_samples)
     data[0] = CALIBRATE_BOT;
     data[1] = n_samples;
 
+    // Send calibration command
     create_packet(src, dst, sizeof(data), data);    
     printf("Command to calibrate sent!\n");
     printf("No. samples: %d\n", n_samples);
+
+    // Wait for first measurement response
+    int client_index = get_index(dst);
+    int ret = recv(client_sock[client_index], client_message, 1024, 0);
+    if (ret < 0) {
+        printf("Error at receiving calibration response!\n");
+        return;
+    }
+
+    unsigned char *resp_data = get_data(client_message);
+    printf("Received data: %d\n" , resp_data[0]);
+
 }
+
+
+/*
+ int client_index = get_index(dst_id);
+    ret = recv(client_sock[client_index] , client_message ,1024, 0);
+   
+    value = get_data(client_message);
+*/
