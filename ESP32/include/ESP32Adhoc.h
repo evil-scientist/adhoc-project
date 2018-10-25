@@ -11,8 +11,6 @@
 #define TCP_PORT 5555
 
 /* Packet format details */
-
-
 #define START_BYTE 0xFF
 
 #define PACKET_START_BYTE_LOC 0
@@ -79,11 +77,9 @@ class ESP32Adhoc
         unsigned int record_count = 0;
     
         /* To keep track of received bytes from UDP */
-
         int recvBytes;
 
         /* Table used to record the movement of packets in network */
-
         struct table {
             unsigned int counter;
             char src;

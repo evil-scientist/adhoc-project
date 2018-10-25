@@ -4,6 +4,8 @@
 #include <IPAddress.h>
 #include <WiFiUdp.h>
 
+#include "ESP32Rssi.h"    // JUR: RSSI-distance calculation stuff
+
 #define WIFILED 22
 #define BLELED 23
 #define REDLED 2
@@ -873,6 +875,7 @@ int canBroadcast(char packet[]) {
   }
 }
 
+
 void getTCPData() {
 
   int numBytes;
@@ -928,11 +931,9 @@ void getTCPData() {
       return;
     }
 
-    // JUR: I guess that means that request RSSI = 14?
+
     if (tcpBuffer[PACKET_DATA_LOC] == 0x0E) {
-#ifdef __DEBUG__
       Serial.println("Sending RSSI value to server");
-#endif
 
       send_RSSI(tcpBuffer, true);
       return;
@@ -940,14 +941,31 @@ void getTCPData() {
 
 
     // JUR: calibrate command packet
-    if (tcpBuffer[PACKET_DATA_LOC] == 0x11) {
+    // First measurement
+    if (tcpBuffer[PACKET_DATA_LOC] == 0x11 && !calibrating) {
       Serial.println("Received calibrate command!\n");
 
       int n_samples = tcpBuffer[PACKET_DATA_LOC + 1];
       Serial.println("No. samples to take:");
       Serial.print(n_samples);
 
-      delay(1000);
+      // TODO: Send a packet to arduino -> LED indicating calibration state
+      
+      // GET AVG RSSI @ dist 1
+
+      // Send packet to server -> next distance
+      
+      delay(1000);  // simulating processing time
+      return;
+    }
+
+    // Second measurement
+    if (tcpBuffer[PACKET_DATA_LOC] == 0x11 && calibrating) {
+      
+      // GET AVG RSSI @ dist 2
+      // calc pathloss exp
+      
+      calibrating = false;
       return;
     }
 
