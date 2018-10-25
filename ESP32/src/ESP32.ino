@@ -681,8 +681,6 @@ void onPacket(const uint8_t* buffer, size_t size)
   if (Adhoc.is_internal_cmd(tmp)) {
 
     if (Adhoc.is_internal_cmd(tmp) == 4) {
-      /* Special case handle it here only */
-      //TBD get RSSI
 
       send_RSSI(tmp, false);
 #ifdef __DEBUG__
@@ -937,6 +935,19 @@ void getTCPData() {
 #endif
 
       send_RSSI(tcpBuffer, true);
+      return;
+    }
+
+
+    // JUR: calibrate command packet
+    if (tcpBuffer[PACKET_DATA_LOC] == 0x11) {
+      Serial.println("Received calibrate command!\n");
+
+      int n_samples = tcpBuffer[PACKET_DATA_LOC + 1];
+      Serial.println("No. samples to take:");
+      Serial.print(n_samples);
+
+      delay(1000);
       return;
     }
 

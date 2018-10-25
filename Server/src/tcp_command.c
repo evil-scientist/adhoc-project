@@ -553,9 +553,13 @@ void print_packet(char *buf,int size) {
 
 
 /* JUR: Custom commands */
-void calibrate_bot(int src, int dst)
+void calibrate_bot(int src, int dst, int n_samples)
 {
-    char data = CALIBRATE_BOT;
-    create_packet(src, dst, sizeof(data), &data);    
+    char data[2];
+    data[0] = CALIBRATE_BOT;
+    data[1] = n_samples;
+
+    create_packet(src, dst, sizeof(data), data);    
     printf("Command to calibrate sent!\n");
+    printf("No. samples: %d\n", n_samples);
 }

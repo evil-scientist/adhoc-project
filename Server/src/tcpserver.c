@@ -172,10 +172,11 @@ int main(int argc , char *argv[])
                 read_file();
                 break;
             case 12:
-                printf("Place the robot 1m from the AP and press any key\n");
-                getchar();  // JUR: UGLY HACK - parse enter that is on stdin from before
-                getchar();
-                calibrate_bot(src_id, dst_id);
+                printf("Place the robot 1m from the AP\n");
+                printf("Enter the desired number of RSSI samples for averaging");
+                scanf("%d", &val);
+
+                calibrate_bot(src_id, dst_id, val);
                 break;
             default:
                 printf("Unknown command received\n");
