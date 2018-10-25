@@ -24,14 +24,11 @@
 
 
 /* Ultrasonic Sesors */
-
 #define ULTRASONIC_FRONT 3 
 
 
 
 /* Packet format details */
-
-
 #define START_BYTE 0xFF
 
 #define PACKET_START_BYTE_LOC 0
@@ -49,7 +46,6 @@
  * 
  * external commands
  */
-
 #define MOVEFORWARD 0X01
 #define MOVEFORWARD_TIME 0X02
 #define MOVEFORWARD_DIST 0X0b
@@ -65,6 +61,8 @@
 #define GET_ID 0x0F
 #define SET_ID 0x10
 
+/* JUR: custom commands */
+#define CALIBRATE_BOT   0x11
 
 /*
  * setting packet location

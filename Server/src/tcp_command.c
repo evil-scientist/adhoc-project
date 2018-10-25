@@ -551,3 +551,12 @@ void print_packet(char *buf,int size) {
 }
 
 
+
+/* JUR: Custom commands */
+void calibrate_bot(int src, int dst)
+{
+    char data = CALIBRATE_BOT;
+    create_packet(src, dst, sizeof(data), &data);
+    
+    printf("Command to calibrate sent!\n");
+}

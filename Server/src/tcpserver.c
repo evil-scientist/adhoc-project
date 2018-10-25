@@ -117,6 +117,9 @@ int main(int argc , char *argv[])
         printf("  9. Get RSSI value\n");
         printf("  10. Get ID\n");
         printf("  11. Execute commands from file (cmd_file.txt)\n");
+
+        // JUR: custom packets
+        printf("  12. Calibrate bot\n");
         printf(" Waiting for user input : "); 
 
         scanf("%d",&cmd_val);        
@@ -167,6 +170,11 @@ int main(int argc , char *argv[])
                 break;
             case 11:
                 read_file();
+                break;
+            case 12:
+                printf("Place the robot 1m from the AP and press any key\n");
+                scanf("%d", &val);
+                calibrate_bot(src_id, dst_id);
                 break;
             default:
                 printf("Unknown command received\n");

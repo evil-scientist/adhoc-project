@@ -27,8 +27,7 @@ char client_message[1024];
 
 
 
-/* Declerations */
-
+/* Declarations */
 char *get_data(char packet[]);
 long get_RSSI(int src,int dst);
 int get_botID(int bot);
@@ -48,4 +47,8 @@ void create_packet_ID(char length,char *data,int client_index);
 int send_cmd(int client_sock, char *buf,int size);
 void print_packet(char *buf,int size);
 void read_file();
+
+/* Custom functions */
+void calibrate_bot(int src, int dst);
+
 #endif
