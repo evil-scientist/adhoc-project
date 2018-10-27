@@ -1,0 +1,314 @@
+rst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)
+configsip: 0, SPIWP:0xee
+clk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00
+mode:DIO, clock div:2
+load:0x3fff0018,len:4
+load:0x3fff001c,len:952
+load:0x40078000,len:6084
+load:0x40080000,len:7944
+entry 0x40080310
+Booting ESP module
+Sending internal command to request ID
+Sending internal command to request matrix
+Sending internal command to request Server IP
+Sending internal command to request Wifi
+Setup done ...
+
+Serial packet received from Arduino
+**********************************************
+Data length in packet : 1 bytes
+|Packet contents|
+FF 1 1 1 30 0 0 1 1
+Source : 1
+Destination : 1
+Intermediate : 1
+Counter : 0
+Current record count : 0
+Packet type : Forwarding packet
+Length : 1
+Data : 1
+**********************************************
+Startbyte : FF
+Received internal Command : 1
+Received internal Command : 1
+Received internal Command : 1
+Received internal Command : 1
+Current SELF ID : 0
+SELF ID changed to : 1
+
+Serial packet received from Arduino
+**********************************************
+Data length in packet : 16 bytes
+|Packet contents|
+FF 1 1 1 70 0 0 10 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+Source : 1
+Destination : 1
+Intermediate : 1
+Counter : 0
+Current record count : 0
+Packet type : Forwarding packet
+Length : 16
+Data : 1111111111111111
+**********************************************
+Startbyte : FF
+Received internal Command : 3
+Received internal Command : 3
+Received internal Command : 3
+Received internal Command : 3
+Connection matrix set
+1111111111111111
+
+Serial packet received from Arduino
+**********************************************
+Data length in packet : 4 bytes
+|Packet contents|
+FF 1 1 1 B0 0 0 4 C0 A8 1 F5
+Source : 1
+Destination : 1
+Intermediate : 1
+Counter : 0
+Current record count : 0
+Packet type : Forwarding packet
+Length : 4
+Data : C0A81F5
+**********************************************
+Startbyte : FF
+Received internal Command : 5
+Received internal Command : 5
+Received internal Command : 5
+Received internal Command : 5
+Server IP address set
+192.168.1.245
+
+
+Serial packet received from Arduino
+**********************************************
+Data length in packet : 32 bytes
+|Packet contents|
+FF 1 1 1 50 0 0 20 69 6E 74 65 72 6E 65 74 5F 65 6A 61 63 75 6C 61 74 6F 72 A9 73 75 70 65 72 43 72 61 70 31 32 33
+Source : 1
+Destination : 1
+Intermediate : 1
+Counter : 0
+Current record count : 0
+Packet type : Forwarding packet
+Length : 32
+Data : 696E7465726E65745F656A6163756C61746F72A9737570657243726170313233
+**********************************************
+Startbyte : FF
+Received internal Command : 2
+Received internal Command : 2
+Received internal Command : 2
+Data obtained :
+69 6E 74 65 72 6E 65 74 5F 65 6A 61 63 75 6C 61 74 6F 72 A9 73 75 70 65 72 43 72 61 70 31 32 33 Data :
+69
+Data :
+6E
+Data :
+74
+Data :
+65
+Data :
+72
+Data :
+6E
+Data :
+65
+Data :
+74
+Data :
+5F
+Data :
+65
+Data :
+6A
+Data :
+61
+Data :
+63
+Data :
+75
+Data :
+6C
+Data :
+61
+Data :
+74
+Data :
+6F
+Data :
+72
+Data :
+A9
+Index :
+19
+New SSID : 19
+New SSID : internet_ejaculator
+New PWD : superCrap123
+Setting SSID and password
+SSID set to : internet_ejaculator
+Password set to : superCrap123
+Initiating connection to AP.Connected to AP "internet_ejaculator"
+Error initializing UDP
+[E][WiFiClient.cpp:213] connect(): lwip_connect_r: 104
+TCP connection failed
+WiFi connected. IP address:
+192.168.1.202
+ets Jun  8 2016 00:22:57
+
+rst:0x1 (POWERON_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)
+configsip: 0, SPIWP:0xee
+clk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00
+mode:DIO, clock div:2
+load:0x3fff0018,len:4
+load:0x3fff001c,len:952
+load:0x40078000,len:6084
+load:0x40080000,len:7944
+entry 0x40080310
+Booting ESP module
+Sending internal command to request ID
+Sending internal command to request matrix
+Sending internal command to request Server IP
+Sending internal command to request Wifi
+Setup done ...
+
+Serial packet received from Arduino
+**********************************************
+Data length in packet : 1 bytes
+|Packet contents|
+FF 1 1 1 30 0 0 1 1
+Source : 1
+Destination : 1
+Intermediate : 1
+Counter : 0
+Current record count : 0
+Packet type : Forwarding packet
+Length : 1
+Data : 1
+**********************************************
+Startbyte : FF
+Received internal Command : 1
+Received internal Command : 1
+Received internal Command : 1
+Received internal Command : 1
+Current SELF ID : 0
+SELF ID changed to : 1
+
+Serial packet received from Arduino
+**********************************************
+Data length in packet : 16 bytes
+|Packet contents|
+FF 1 1 1 70 0 0 10 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1
+Source : 1
+Destination : 1
+Intermediate : 1
+Counter : 0
+Current record count : 0
+Packet type : Forwarding packet
+Length : 16
+Data : 1111111111111111
+**********************************************
+Startbyte : FF
+Received internal Command : 3
+Received internal Command : 3
+Received internal Command : 3
+Received internal Command : 3
+Connection matrix set
+1111111111111111
+
+Serial packet received from Arduino
+**********************************************
+Data length in packet : 4 bytes
+|Packet contents|
+FF 1 1 1 B0 0 0 4 C0 A8 1 F5
+Source : 1
+Destination : 1
+Intermediate : 1
+Counter : 0
+Current record count : 0
+Packet type : Forwarding packet
+Length : 4
+Data : C0A81F5
+**********************************************
+Startbyte : FF
+Received internal Command : 5
+Received internal Command : 5
+Received internal Command : 5
+Received internal Command : 5
+Server IP address set
+192.168.1.245
+
+
+Serial packet received from Arduino
+**********************************************
+Data length in packet : 32 bytes
+|Packet contents|
+FF 1 1 1 50 0 0 20 69 6E 74 65 72 6E 65 74 5F 65 6A 61 63 75 6C 61 74 6F 72 A9 73 75 70 65 72 43 72 61 70 31 32 33
+Source : 1
+Destination : 1
+Intermediate : 1
+Counter : 0
+Current record count : 0
+Packet type : Forwarding packet
+Length : 32
+Data : 696E7465726E65745F656A6163756C61746F72A9737570657243726170313233
+**********************************************
+Startbyte : FF
+Received internal Command : 2
+Received internal Command : 2
+Received internal Command : 2
+Data obtained :
+69 6E 74 65 72 6E 65 74 5F 65 6A 61 63 75 6C 61 74 6F 72 A9 73 75 70 65 72 43 72 61 70 31 32 33 Data :
+69
+Data :
+6E
+Data :
+74
+Data :
+65
+Data :
+72
+Data :
+6E
+Data :
+65
+Data :
+74
+Data :
+5F
+Data :
+65
+Data :
+6A
+Data :
+61
+Data :
+63
+Data :
+75
+Data :
+6C
+Data :
+61
+Data :
+74
+Data :
+6F
+Data :
+72
+Data :
+A9
+Index :
+19
+New SSID : 19
+New SSID : internet_ejaculator
+New PWD : superCrap123
+Setting SSID and password
+SSID set to : internet_ejaculator
+Password set to : superCrap123
+Initiating connection to AP.Connected to AP "internet_ejaculator"
+Error initializing UDP
+[E][WiFiClient.cpp:213] connect(): lwip_connect_r: 104
+TCP connection failed
+WiFi connected. IP address:
+192.168.1.202
