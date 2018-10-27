@@ -1,4 +1,4 @@
-*.pyc
+**.pyc
 *.log
 *.synctex.gz
 *.aux
