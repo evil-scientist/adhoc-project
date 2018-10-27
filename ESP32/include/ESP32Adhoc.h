@@ -52,6 +52,9 @@
 /* Number of records to maintain */
 #define NUM_RECORDS 512
 
+//BROADCAST address used to accept all packets with dst = 255
+#define ADHOC_BROADCAST 255
+
 class ESP32Adhoc 
 {
     public:

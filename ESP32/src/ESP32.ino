@@ -225,10 +225,10 @@ void adhoc_recv_filter(char packet[]) {
 
   /* Chck if self is the destination
   */
-  if (Adhoc.ID_SELF == dst) {
+  if (Adhoc.ID_SELF == dst || dst == ADHOC_BROADCAST) {
 
 #ifdef __DEBUG__
-    Serial.print("I am the destination ");
+    Serial.print("I am the destination (or it was broadcasted)");
 #endif
 
     /* Check if entry for the packet already present
@@ -628,6 +628,7 @@ void loop() {
   recvWithStartEndMarkers();
   getTCPData();
   serial.update();
+  check_RSSI();
 }
 
 
@@ -659,6 +660,49 @@ void send_RSSI(char packet[], bool isTCP) {
   {
     sendToArduino(rssi_packet, 13);
   }
+}
+void send_distance()
+{
+
+  unsigned char packet[11];
+  packet[0]                              = 0x80;           // Start marker
+  packet[PACKET_START_BYTE_LOC +1]       = START_BYTE;
+  packet[PACKET_SRC_LOC +1]              = Adhoc.ID_SELF;
+  packet[PACKET_DST_LOC +1]              = ;              // server
+  packet[PACKET_INTERMEDIATE_SRC_LOC +1] = 0;
+  packet[PACKET_INTERNAL_CMD_LOC +1]     = 0;
+  packet[PACKET_COUNTER_HIGH_LOC +1]     = 0;
+  packet[PACKET_COUNTER_LOW_LOC +1]      = 0;
+  packet[PACKET_DATA_LENGTH_LOC +1]      = 1;
+  packet[PACKET_DATA_LOC +1]             = my_distance;  // sendind my_distance set by set_distance() 
+  packet[10]                             = 0x81;           // End marker
+
+  client.write(packet, sizeof(packet));
+  Serial.println("Sent calibration_next packet to server!\n");
+}
+// SURY : checking motion -> probe RSSI
+void check_RSSI()
+{
+  long RSSI_val = Adhoc.get_RSSI();
+  RSSI_window[count] = RSSI_val;
+  count ++;
+  if (count > window_size){
+    count = 0;
+  }
+  long sum = 0;
+  long avg_RSSI = 0;
+  // check if car has moved using window of RSSI 
+  for (int i = 0; i<window_size; i++)
+  {
+    sum = sum + abs(RSSI_window[i++] - RSSI_window[i]);
+  }
+  avg_RSSI = sum / (window_size-1);
+  if (avg_RSSI > 0 && avg_RSSI < 4) // HARDCODED THE THRESHOLD for stable RSSI
+  {
+    // RSSI is stable so get distance now
+    set_distance();
+    send_distance();
+  }      
 }
 
 
