@@ -564,8 +564,7 @@ void calibrate_bot(int bot_id, int n_samples)
     data[0] = CALIBRATE_BOT;
     data[1] = n_samples;
 
-    create_packet(0, bot_id, sizeof(data), data);    
-    printf("Command to calibrate sent!\n");
+    create_packet(0, bot_id, sizeof(data), data);
     wait_response(bot_id, 0x66);                       // NEXT_POSITION
     
     // Wait for robot placement
@@ -573,9 +572,10 @@ void calibrate_bot(int bot_id, int n_samples)
     while (getchar() != '\n') {}
 
     // Send second calibration command
-    create_packet(0, bot_id, sizeof(data), data);    
-    printf("Command to calibrate sent!\n");
+    create_packet(0, bot_id, sizeof(data), data);
     wait_response(bot_id, 0x67);                       // CALIBRATION_DONE
+
+    printf("Calibration finished successfully!\n");
 
 }
 
@@ -593,7 +593,7 @@ void wait_response(int bot_id, unsigned char cmd)
     // Check (first) data byte of the response packet
     char *resp_data = get_data(client_message);
     if (resp_data[0] != cmd) {
-        printf("Received something else aka not calibration OK!\n");
+        printf("Received something else aka not the desired command!\n");
         return;
     }
 }

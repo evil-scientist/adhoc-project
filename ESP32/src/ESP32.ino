@@ -46,6 +46,9 @@ char *tcpBuffer;
 uint8_t dummy[] = {0x00, 0x00, 0x00, 0x00, 0x00};
 
 
+// JUR: calibration state flag
+bool calibrating = false;
+
 void set_id(char *data) {
   Adhoc.ID_SELF = *data;
 }
@@ -595,6 +598,13 @@ void setup() {
 
   init_routine();
 
+  pinMode(BLELED, OUTPUT);
+  pinMode(WIFILED, OUTPUT);
+  pinMode(REDLED, OUTPUT);
+  digitalWrite(BLELED, LOW);
+  digitalWrite(WIFILED, LOW);
+  digitalWrite(REDLED, LOW);
+
   // JUR: TODO check why do we use this timer stuff?
   timer = timerBegin(0, 80, true);
   timerAttachInterrupt(timer, &onTimer, true);
@@ -660,37 +670,6 @@ void send_RSSI(char packet[], bool isTCP) {
     sendToArduino(rssi_packet, 13);
   }
 }
-
-
-/*
-  JUR: calibration process -> send packet calibration pt.1 done
-*/
-void send_calibration_next()
-{
-
-  unsigned char packet[11];
-  packet[0]                              = 0x80;           // Start marker
-  packet[PACKET_START_BYTE_LOC +1]       = START_BYTE;
-  packet[PACKET_SRC_LOC +1]              = Adhoc.ID_SELF;
-  packet[PACKET_DST_LOC +1]              = 0;              // server
-  packet[PACKET_INTERMEDIATE_SRC_LOC +1] = 0;
-  packet[PACKET_INTERNAL_CMD_LOC +1]     = 0;
-  packet[PACKET_COUNTER_HIGH_LOC +1]     = 0;
-  packet[PACKET_COUNTER_LOW_LOC +1]      = 0;
-  packet[PACKET_DATA_LENGTH_LOC +1]      = 1;
-  packet[PACKET_DATA_LOC +1]             = NEXT_POSITION;  // testing without macro for now NEXT_POSITION
-  packet[10]                             = 0x81;           // End marker
-
-  client.write(packet, sizeof(packet));
-  Serial.println("Sent calibration_next packet to server!\n");
-}
-
-void send_calibration_ok()
-{
-
-}
-
-
 
 
 void onPacket(const uint8_t* buffer, size_t size)
@@ -972,37 +951,39 @@ void getTCPData() {
     }
 
 
-    // JUR: calibrate command packet
+    // JUR: Calibration stuff -------------------------------------------------
     // First measurement
     if (tcpBuffer[PACKET_DATA_LOC] == 0x11 && !calibrating) {
-      Serial.println("Received calibrate command!\n");
+
+      calibrating = true;
 
       int n_samples = tcpBuffer[PACKET_DATA_LOC + 1];
-      Serial.print("No. samples to take: ");
-      Serial.println(n_samples);
 
-      // TODO: Send a packet to arduino -> LED indicating calibration state
-      
-      // GET AVG RSSI @ dist 1
+      // Send "next position" packet to server
+      unsigned char data[] = { NEXT_POSITION };
+      send_to_server(data, sizeof(data));
 
-      // Send packet to server -> next distance
-      send_calibration_next();
-      
-      delay(1000);  // simulating processing time
       return;
     }
 
     // Second measurement
     if (tcpBuffer[PACKET_DATA_LOC] == 0x11 && calibrating) {
       
+
+      Serial.println("Second part of calibration!\n");
       // GET AVG RSSI @ dist 2
       // calc pathloss exp
+      delay(1000);  // simulating processing time
 
-      send_calibration_ok();
+      unsigned char data[] = { CALIBRATION_DONE };
+      send_to_server(data, sizeof(data));
       
       calibrating = false;
       return;
     }
+
+    // ------------------------------------------------------------------------
+
 
 #ifdef __DEBUG__
     Serial.println("Sending TCP Buffer to Arduino");

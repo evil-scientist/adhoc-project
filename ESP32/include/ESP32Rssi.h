@@ -2,11 +2,11 @@
 #define ESP32RSSI_H
 
 /* Calibration messages */
-#define NEXT_POSITION   0x66
+#define NEXT_POSITION           0x66
+#define CALIBRATION_DONE        0x67
 
-bool calibrating = false;
+extern bool calibrating;
 
-void send_calibration_next();
-void send_calibration_ok();
+void send_to_server(unsigned char *data, unsigned char size);
 
 #endif
