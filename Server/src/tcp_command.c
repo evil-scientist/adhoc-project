@@ -445,7 +445,8 @@ void create_packet(int src,int dst, char length,char *data)
     int l,i,j;
     char checksum;
     char *packet;
-    int client_index = get_index(dst);
+    // int client_index = get_index(dst);          
+    int client_index = get_index(1);          
     
     if(client_index == -1) {
 
@@ -552,34 +553,47 @@ void print_packet(char *buf,int size) {
 
 
 /* JUR: Custom commands */
-void calibrate_bot(int src, int dst, int n_samples)
+void calibrate_bot(int bot_id, int n_samples)
 {
+    // Wait for robot placement
+    printf("Place the robot 1m from the AP and press ENTER when ready\n");
+    while (getchar() != '\n') {}
+
+    // Send calibration command
     char data[2];
     data[0] = CALIBRATE_BOT;
     data[1] = n_samples;
 
-    // Send calibration command
-    create_packet(src, dst, sizeof(data), data);    
+    create_packet(0, bot_id, sizeof(data), data);    
     printf("Command to calibrate sent!\n");
-    printf("No. samples: %d\n", n_samples);
+    wait_response(bot_id, 0x66);                       // NEXT_POSITION
+    
+    // Wait for robot placement
+    printf("Place the robot 2m from the AP and press ENTER when ready\n");
+    while (getchar() != '\n') {}
 
-    // Wait for first measurement response
-    int client_index = get_index(dst);
+    // Send second calibration command
+    create_packet(0, bot_id, sizeof(data), data);    
+    printf("Command to calibrate sent!\n");
+    wait_response(bot_id, 0x67);                       // CALIBRATION_DONE
+
+}
+
+
+void wait_response(int bot_id, unsigned char cmd)
+{
+    // Get response packet
+    int client_index = get_index(bot_id);
     int ret = recv(client_sock[client_index], client_message, 1024, 0);
     if (ret < 0) {
         printf("Error at receiving calibration response!\n");
         return;
     }
 
+    // Check (first) data byte of the response packet
     char *resp_data = get_data(client_message);
-    printf("Received data: %d\n" , resp_data[0]);
-
+    if (resp_data[0] != cmd) {
+        printf("Received something else aka not calibration OK!\n");
+        return;
+    }
 }
-
-
-/*
- int client_index = get_index(dst_id);
-    ret = recv(client_sock[client_index] , client_message ,1024, 0);
-   
-    value = get_data(client_message);
-*/

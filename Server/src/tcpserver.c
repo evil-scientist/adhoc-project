@@ -120,9 +120,12 @@ int main(int argc , char *argv[])
 
         // JUR: custom packets
         printf("  12. Calibrate bot\n");
-        printf(" Waiting for user input : "); 
+        printf(" 13. Send BCAST packet\n");
 
-        scanf("%d",&cmd_val);        
+
+        printf(" Waiting for user input : "); 
+        scanf("%d",&cmd_val);  
+        printf("\n");      
 
         switch(cmd_val) {
 
@@ -172,13 +175,18 @@ int main(int argc , char *argv[])
                 read_file();
                 break;
             case 12:
-                printf("\n");
-                printf("Place the robot 1m from the AP\n");
                 printf("Enter the desired number of RSSI samples for averaging: ");
                 scanf("%d", &val);
+                getchar();                                  // JUR: temporary hack to consume newline character from stdin
                 printf("\n");
 
-                calibrate_bot(src_id, dst_id, val);
+                calibrate_bot(dst_id, val);
+                break;
+
+            case 13:
+                printf("Sending a broadcast packet!\n");
+                char dummy[] = {0};
+                create_packet(0, 255, sizeof(dummy), dummy);
                 break;
             default:
                 printf("Unknown command received\n");
@@ -186,8 +194,7 @@ int main(int argc , char *argv[])
 
         }
 
-        //system("clear");
-		 printf("\r\n"); 
+		printf("\r\n"); 
     }
     return 0;
 }

@@ -48,6 +48,7 @@ void print_packet(char *buf,int size);
 void read_file();
 
 /* Custom functions */
-void calibrate_bot(int src, int dst, int n_samples);
+void calibrate_bot(int bot_id, int n_samples);
+void wait_response(int bot_id, unsigned char cmd);
 
 #endif
