@@ -5,12 +5,17 @@
 #include <WiFi.h>
 #include <IPAddress.h>
 #include <WiFiUdp.h>
+#include <math.h>
 
 #include "ESP32Adhoc.h"
 #include "ESP32Rssi.h"
 
-extern ESP32Adhoc Adhoc;
-extern WiFiClient client;
+
+bool calibrating = false;
+float eta;
+long RSSI_ref1;
+long RSSI_ref2;
+
 
 void send_to_server(unsigned char* data, unsigned char size)
 {
@@ -32,6 +37,37 @@ void send_to_server(unsigned char* data, unsigned char size)
     
     packet[10]                             = 0x81;           // End marker
 
-    client.write(packet, sizeof(packet));
-    
+    client.write(packet, sizeof(packet)); 
+}
+
+
+long avg_rssi(int n_samples)
+{
+
+    long avg_rssi = 0;
+    for (int i=0; i < n_samples; i++) {
+
+        // DEBUGGING
+        long tmp = Adhoc.get_RSSI();
+        avg_rssi += tmp;
+        Serial.print("RSSI no. ");
+        Serial.print(i);
+        Serial.print(" = ");
+        Serial.print(tmp);
+        Serial.println("");
+
+        delay(250);             // Sampling period hardcoded for now
+    }
+
+    avg_rssi = avg_rssi / n_samples;
+
+    Serial.print("Avg RSSI: ");
+    Serial.println(avg_rssi);
+    return avg_rssi;
+}
+
+
+float calc_eta(long RSSI_ref1, long RSSI_ref2, int dist_1, int dist_2)
+{
+    return (RSSI_ref1 - RSSI_ref2) / (10*log10(dist_2/dist_1));
 }

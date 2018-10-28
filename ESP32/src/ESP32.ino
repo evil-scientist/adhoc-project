@@ -46,9 +46,6 @@ char *tcpBuffer;
 uint8_t dummy[] = {0x00, 0x00, 0x00, 0x00, 0x00};
 
 
-// JUR: calibration state flag
-bool calibrating = false;
-
 void set_id(char *data) {
   Adhoc.ID_SELF = *data;
 }
@@ -957,7 +954,9 @@ void getTCPData() {
 
       calibrating = true;
 
+      // Get average RSSI @ distance 1
       int n_samples = tcpBuffer[PACKET_DATA_LOC + 1];
+      RSSI_ref1 = avg_rssi(n_samples);
 
       // Send "next position" packet to server
       unsigned char data[] = { NEXT_POSITION };
@@ -969,12 +968,17 @@ void getTCPData() {
     // Second measurement
     if (tcpBuffer[PACKET_DATA_LOC] == 0x11 && calibrating) {
       
+      // Get average RSSI @ distance 2
+      int n_samples = tcpBuffer[PACKET_DATA_LOC + 1];
+      RSSI_ref2 = avg_rssi(n_samples);
 
-      Serial.println("Second part of calibration!\n");
-      // GET AVG RSSI @ dist 2
-      // calc pathloss exp
-      delay(1000);  // simulating processing time
+      // Calc pathloss exp
+      eta = calc_eta(RSSI_ref1, RSSI_ref2, 1, 2);
+      Serial.print("Calculated pathloss exponent: ");
+      Serial.print(eta);
+      Serial.println("");
 
+      // Send "CALIBRATION_DONE" command to server
       unsigned char data[] = { CALIBRATION_DONE };
       send_to_server(data, sizeof(data));
       
