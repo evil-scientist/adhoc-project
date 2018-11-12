@@ -177,9 +177,13 @@ app.addButtons(['Change','Show Changed Graph', 'Reroute'],graphChange)
 app.setButtonFont(16,'Times')
 app.stopSubWindow()
 ###<<<------------------->>>###
+<<<<<<< HEAD
+'''
+=======
 
 
 
+>>>>>>> 3d9f7de69c17e13e772d9acf868f2c88cc820353
 #Scale Free Graph Window        
 def getDataScaleFree(button):
 	if button == 'Continue':
