@@ -950,7 +950,7 @@ void getTCPData() {
 
     // JUR: Calibration stuff -------------------------------------------------
     // First measurement
-    if (tcpBuffer[PACKET_DATA_LOC] == 0x11 && !calibrating) {
+    if (tcpBuffer[PACKET_DATA_LOC] == CALIBRATE_BOT && !calibrating) {
 
       calibrating = true;
 
@@ -959,14 +959,23 @@ void getTCPData() {
       RSSI_ref1 = avg_rssi(n_samples);
 
       // Send "next position" packet to server
-      unsigned char data[] = { NEXT_POSITION };
-      send_to_server(data, sizeof(data));
+      unsigned char *data = (unsigned char *) malloc (1 + sizeof(long));
+      data[0] = NEXT_POSITION;
+
+      // Include measured avg RSSI into packet
+      Serial.println("Splitting integer into byte array");
+      for(int i=1; i <= sizeof(long); i++) {
+        data[i] = (unsigned char)(RSSI_ref1 >> 8*i);    // Split long int into bytes (done with casting to char + byte shifting)
+        Serial.println(data[i]);
+      }
+
+      send_to_server(data, sizeof(long) + 1);
 
       return;
     }
 
     // Second measurement
-    if (tcpBuffer[PACKET_DATA_LOC] == 0x11 && calibrating) {
+    if (tcpBuffer[PACKET_DATA_LOC] == CALIBRATE_BOT && calibrating) {
       
       // Get average RSSI @ distance 2
       int n_samples = tcpBuffer[PACKET_DATA_LOC + 1];

@@ -560,12 +560,12 @@ void calibrate_bot(int bot_id, int n_samples)
     while (getchar() != '\n') {}
 
     // Send calibration command
-    char data[2];
+    unsigned char data[2];
     data[0] = CALIBRATE_BOT;
     data[1] = n_samples;
 
     create_packet(0, bot_id, sizeof(data), data);
-    wait_response(bot_id, 0x66);                       // NEXT_POSITION
+    wait_response(bot_id, NEXT_POSITION);                       // NEXT_POSITION
     
     // Wait for robot placement
     printf("Place the robot 2m from the AP and press ENTER when ready\n");
@@ -573,7 +573,7 @@ void calibrate_bot(int bot_id, int n_samples)
 
     // Send second calibration command
     create_packet(0, bot_id, sizeof(data), data);
-    wait_response(bot_id, 0x67);                       // CALIBRATION_DONE
+    wait_response(bot_id, CALIBRATION_DONE);                       // CALIBRATION_DONE
 
     printf("Calibration finished successfully!\n");
 
@@ -591,9 +591,21 @@ void wait_response(int bot_id, unsigned char cmd)
     }
 
     // Check (first) data byte of the response packet
-    char *resp_data = get_data(client_message);
+    unsigned char *resp_data = get_data(client_message);
     if (resp_data[0] != cmd) {
         printf("Received something else aka not the desired command!\n");
         return;
+    }
+
+    // Extract RSSI value
+    if (cmd == NEXT_POSITION) {
+
+        for (int i=1; i <= 4; i++) {
+            printf("data[%d]: %u\n", i, resp_data[i]);
+        }
+
+        int avg_rrsi_1 = *(int *)(&resp_data[1]);
+        printf("Avg rssi: %d\n", avg_rrsi_1);
+
     }
 }

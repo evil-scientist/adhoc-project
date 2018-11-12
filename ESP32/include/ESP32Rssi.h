@@ -2,6 +2,7 @@
 #define ESP32RSSI_H
 
 /* Calibration messages */
+#define CALIBRATE_BOT           0x11        // copied from server CommandList.h = ugly hack
 #define NEXT_POSITION           0x66
 #define CALIBRATION_DONE        0x67
 

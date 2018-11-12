@@ -62,7 +62,9 @@
 #define SET_ID 0x10
 
 /* JUR: custom commands */
-#define CALIBRATE_BOT   0x11
+#define CALIBRATE_BOT           0x11    
+#define NEXT_POSITION           0x66    // Copied from ESPRssi.h = ugly hack
+#define CALIBRATION_DONE        0x67    // Copied from ESPRssi.h = ugly hack
 
 /*
  * setting packet location
