@@ -33,6 +33,14 @@ def editGraphDistance(g,pos):
 		g[startnode][endnode]['weight']=random.randint(1,11)
 		
 	return g
+	
+def edgeWeight(g,pos):
+	for edge in g.edges():
+		startnode = edge[0]
+		endnode = edge[1]
+		g[startnode][endnode]['weight']= 1 #random.randint(1,3)
+		
+	return g
 
 def plotDistribution(g,pos):
 	lengths = eucledianDistanceBetweenNodes(g,pos)
