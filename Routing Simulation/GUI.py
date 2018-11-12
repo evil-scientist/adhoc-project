@@ -196,7 +196,7 @@ def getDataScaleFree(button):
         	
 		global g
 		global pos 
-		g = nx.barabasi_albert_graph(numberOfNodes,2)
+		g = nx.barabasi_albert_graph(numberOfNodes,3, seed = 3)
 		pos = nx.spring_layout(g) #define graph layput so node positions stay the same from plot to plot
 		g = routing.edgeWeight(g,pos)
 		routing.plotDistribution(g,pos)
