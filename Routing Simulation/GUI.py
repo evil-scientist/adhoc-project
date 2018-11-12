@@ -177,17 +177,29 @@ app.addButtons(['Change','Show Changed Graph', 'Reroute'],graphChange)
 app.setButtonFont(16,'Times')
 app.stopSubWindow()
 ###<<<------------------->>>###
-'''
+
+
+
 #Scale Free Graph Window        
 def getDataScaleFree(button):
-    if button == 'Cancel.':
-        app.hideSubWindow('Scale Free Graph')
-    else:
-        numberOfNodes = app.getEntry('No. of Nodes')
-        #global file_name
-        #file_name = name + '_' + gesture + '.csv'
-        print('The graph will have: ' + numberOfNodes + 'nodes')
-        #app.showSubWindow('Graph')
+	if button == 'Continue':
+		app.hideSubWindow('Scale Free Graph')
+		app.showSubWindow('Graph')
+	else:
+		global numberOfNodes 
+		numberOfNodes = int(app.getEntry('No of Nodes'))
+		#global probability 
+		#probability = float(app.getEntry('Probability of Link'))
+        
+		print('\n\nThe graph will have: ' + str(numberOfNodes) + ' nodes')
+		#print('The graph will have: ' + str(probability) + ' probability of link existence\n\n')
+        	
+		global g
+		global pos 
+		g = nx.barabasi_albert_graph(numberOfNodes,2)
+		pos = nx.spring_layout(g) #define graph layput so node positions stay the same from plot to plot
+		g = routing.edgeWeight(g,pos)
+		routing.plotDistribution(g,pos)
 
 ###<<< Scale Free Graph Window >>>###
 app.startSubWindow('Scale Free Graph', modal=True)
@@ -198,14 +210,14 @@ app.addLabel('title3','    Scale Free Graph Mode    ')
 app.setLabelBg('title3','blue')
 app.setLabelFg('title3','white')
 #Label Entries
-app.addLabelEntry('No. of Nodes')
+app.addLabelEntry('No of Nodes')
 #Buttons
-app.addButtons(['Enter.','Cancel.'],getDataScaleFree)
+app.addButtons(['Generate Graph','Continue'],getDataScaleFree)
 app.setButtonFont(16,'Times')
-app.setFocus('Number of Nodes')
+app.setFocus('No of Nodes')
 app.stopSubWindow()
 ###<<<------------------->>>###
-'''
+
 
 
 #starting main GUI
