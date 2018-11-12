@@ -19,15 +19,20 @@ import numpy, math
 
 #Main Menu Window
 def graphChoose(button):
-    if button == 'Random Graph':
+    if button == 'Geometric Random Graph':
         #app.stop()
         print('\nYou have chosen Random Graph Mode\n')
         warnings.filterwarnings("ignore",category=matplotlib.cbook.mplDeprecation)
         app.showSubWindow('Random Graph')
+    elif button == 'Star Graph':
+        #app.stop()
+        print('\nYou have chosen Star Graph Mode\n')
+        warnings.filterwarnings("ignore",category=matplotlib.cbook.mplDeprecation)
+        app.showSubWindow('Star Graph')
     else:
         app.showSubWindow('Scale Free Graph')
 
-app = gui('AdHoc Network Creator v.1', '400x200')
+app = gui('AdHoc Network Creator v.1', '1000x200')
 app.setBg('Orange')
 app.setLabelFont(16,'Times')
 font = 'Times 16 normal'
@@ -38,7 +43,7 @@ app.setLabelBg('title1','red')
 app.setLabelFg('title1','white')
 
 #Buttons
-app.addButtons(['Random Graph','Scale Free Graph'],graphChoose)
+app.addButtons(['Geometric Random Graph','Scale Free Graph','Star Graph'],graphChoose)
 app.setButtonFont(16,'Times')
 
 
@@ -120,6 +125,7 @@ def getRoute(button):
 		app.showSubWindow('Graph')
 	else:
 		global nodeList
+		global g
 		source = int(app.getEntry('Source Node'))
 		destination = int(app.getEntry('Destination Node'))
 		path = routing.routeRoute(g,pos,nodeList,source,destination)        	
@@ -195,7 +201,10 @@ def getDataScaleFree(button):
         	
 		global g
 		global pos 
-		g = nx.barabasi_albert_graph(numberOfNodes,4, seed = 1)
+		#g = nx.barabasi_albert_graph(numberOfNodes,3, seed = 1)
+		#g = nx.star_graph((numberOfNodes-1))
+		#g = nx.random_powerlaw_tree(numberOfNodes,tries=20)
+		g = nx.powerlaw_cluster_graph(numberOfNodes,2,0.1)
 		pos = nx.circular_layout(g) #define graph layput so node positions stay the same from plot to plot
 		g = routing.edgeWeight(g,pos)
 		routing.plotDistribution(g,pos)
@@ -217,6 +226,44 @@ app.setFocus('No of Nodes')
 app.stopSubWindow()
 ###<<<------------------->>>###
 
+
+#Star Graph Window        
+def getDataStar(button):
+	if button == 'Go On':
+		app.hideSubWindow('Star Graph')
+		app.showSubWindow('Graph')
+	else:
+		global numberOfNodes 
+		numberOfNodes = int(app.getEntry('No. of Nodes'))
+		#global probability 
+		#probability = float(app.getEntry('Probability of Link'))
+        
+		print('\n\nThe graph will have: ' + str(numberOfNodes) + ' nodes')
+		#print('The graph will have: ' + str(probability) + ' probability of link existence\n\n')
+        	
+		global g
+		global pos 
+		g = nx.star_graph((numberOfNodes-1))
+		pos = nx.circular_layout(g) #define graph layput so node positions stay the same from plot to plot
+		g = routing.edgeWeight(g,pos)
+		routing.plotDistribution(g,pos)
+
+###<<< Star Graph Window >>>###
+app.startSubWindow('Star Graph', modal=True)
+app.setBg('Orange')
+app.setGeometry("400x200")
+app.setFont(18)
+app.addLabel('title7','    Star Graph Mode    ')
+app.setLabelBg('title7','blue')
+app.setLabelFg('title7','white')
+#Label Entries
+app.addLabelEntry('No. of Nodes')
+#Buttons
+app.addButtons(['Generate Star Graph','Go On'],getDataStar)
+app.setButtonFont(16,'Times')
+app.setFocus('No. of Nodes')
+app.stopSubWindow()
+###<<<------------------->>>###
 
 
 #starting main GUI

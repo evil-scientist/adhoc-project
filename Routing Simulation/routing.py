@@ -3,6 +3,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import numpy, math
+import collections
 #import seaborn as sns
 
 def eucledianDistanceBetweenNodes(g,pos):
@@ -43,11 +44,15 @@ def edgeWeight(g,pos):
 	return g
 
 def plotDistribution(g,pos):
-	lengths = eucledianDistanceBetweenNodes(g,pos)
-	plt.bar(range(len(lengths.keys())), list(lengths.values()), color='g')
-	plt.ylabel('Link Probability')
-	plt.xlabel('Number of Nodes')	
-	plt.title('Link Probability Distribution')	
+	degree_sequence = sorted([d for n, d in g.degree()], reverse=True)  # degree sequence# print "Degree sequence", degree_sequence
+	degreeCount = collections.Counter(degree_sequence)
+	deg, cnt = zip(*degreeCount.items())
+	
+	fig, ax = plt.subplots()
+	plt.bar(deg, cnt, width=0.80, color='b')
+	plt.xlabel('Degree')
+	plt.ylabel('Number of Nodes')	
+	plt.title('Degree Distribution')	
 	plt.show()
 
 def plotGraph(g,pos):
@@ -59,7 +64,7 @@ def plotGraph(g,pos):
 	plt.show()
 
 def shortestPath(AdjacencyMatrix,sourceNode,numberOfNodes):
-	i = 0 
+	#i = 0 
 	m = 1 #used to increasingly find neighbours of neighbours
 	visitedList = []
 	sourceList = []
@@ -79,15 +84,27 @@ def shortestPath(AdjacencyMatrix,sourceNode,numberOfNodes):
 	while Q:
 		Q.remove(u)
 		#u is newest removed member
+		#print("Q",Q)
+		#print("u",u)
+		#check = [value for value in AdjacencyMatrix[u] if value > 0 and AdjacencyMatrix[u].index(value) in Q]
+		check = []
+		s = 0
+		for value in AdjacencyMatrix[u]:
+			if value>0 and s in Q:
+				check.append(value)
+			s = s+1
+					
 		
-		check = [value for value in AdjacencyMatrix[u] if value > 0 and AdjacencyMatrix[u].index(value) in Q]
+		#print("Check List is",check)
 		if check:
 			i = 0
+			print(i)
 			for row in AdjacencyMatrix[u]:
 				#k = AdjacencyMatrix[u].index(min(check))
 				if row > 0:
 					if (min(sourceList[i],row+sourceList[u])) == (row + sourceList[u]):
 						sourceList[i] = (min(sourceList[i],AdjacencyMatrix[u][i]+sourceList[u]))
+						#print(sourceList[i])
 						intermediateList[i] = u #add this node to the path list
 				i+=1
 				
@@ -97,6 +114,7 @@ def shortestPath(AdjacencyMatrix,sourceNode,numberOfNodes):
 				value.update({k:sourceList[k]})
 		if value:
 			u = min(value,key =value.get)
+			
 		else:
 			if len(Q) == 1:
 				Q.remove(Q[0])
@@ -131,7 +149,7 @@ def shortestPath(AdjacencyMatrix,sourceNode,numberOfNodes):
 	#print("Cost List is", sourceList)
 	#print("Path Taken is", pathTaken)
 	#print("Visited List is", visitedList)
-	
+	print("Visited List",visitedList)
 	return visitedList
 	
 	
@@ -270,17 +288,41 @@ def main():
 	print('\n\nThe graph will have: ' + str(numberOfNodes) + ' nodes')
 	print('The graph will have: ' + str(probability) + ' probability of link existence\n\n')
         	
-	g = nx.erdos_renyi_graph(numberOfNodes,probability)
-	pos = nx.spring_layout(g) #define graph layput so node positions stay the same from plot to plot
-	g = editGraphDistance(g,pos)
-	plotDistribution(g,pos)
-
-	source = int(raw_input("What is the source node:"))
-	destination = int(raw_input("What is the destination:"))
+	#g = nx.erdos_renyi_graph(numberOfNodes,probability)
+	g = nx.star_graph(numberOfNodes-1)
+	#g = nx.barabasi_albert_graph(numberOfNodes,4, seed = 1)
+	pos = nx.circular_layout(g) #define graph layput so node positions stay the same from plot to plot
+		#randomly assigning edge weights
+	for edge in g.edges():
+		startnode = edge[0]
+		endnode = edge[1]
+		g[startnode][endnode]['weight']=random.randint(1,1)
+	#g = editGraphDistance(g,pos)
+	#plotDistribution(g,pos)
 	
-	#plotGraph(g,pos)
-	result = listRoute(g,pos,numberOfNodes)
-	AdjacencyMatrix,nodeList = result["AdjacencyMatrix"],result["nodeList"]
+	plotGraph(g,pos)
+	AdjacencyMatrix = nx.adjacency_matrix(g)
+	AdjacencyMatrix = nx.to_numpy_matrix(g)
+	AdjacencyMatrix = AdjacencyMatrix.tolist()
+  
+	#initialise elements
+	typeFlag, source, destination, sequence, metric, intermediary,data = 1,1,1,1,1,1,1
+	packet = [typeFlag, source, destination, sequence, metric, intermediary,data]
+			
+	color_map = []
+	
+	nodeList = []
+	for i in range(numberOfNodes):
+		nodeList.append(adHocNode(i))
+	
+	print(nodeList)
+	destinationList = []
+	destinationList.extend(range(numberOfNodes))
+	
+	#shortestPath(AdjacencyMatrix,1,numberOfNodes)
+	#shortestPath(AdjacencyMatrix,2,numberOfNodes)
+	
+	'''AdjacencyMatrix,nodeList = result["AdjacencyMatrix"],result["nodeList"]
 	
 	path = routeRoute(g,pos,nodeList,source,destination)        	
 	showRoute(g,pos,path)	
@@ -296,6 +338,6 @@ def main():
 	plotGraph(g,pos)
 	path = routeRoute(g,pos,nodeList,source,destination)
 		
-	showRoute(g,pos,path)	
+	showRoute(g,pos,path)'''
 
 #main()
