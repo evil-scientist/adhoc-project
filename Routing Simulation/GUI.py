@@ -1,4 +1,4 @@
-#! Python3
+
 import time
 import csv
 import serial
@@ -89,10 +89,10 @@ def graphPress(button):
         #routing.editGraphDistance(g,pos)
         routing.plotGraph(g,pos)
     elif button == 'Change Topology':
-		app.showSubWindow('Topology Change')	
+        app.showSubWindow('Topology Change')	
     else:        
         global nodeList
-        global g        
+        #global g        
         returnDict = routing.listRoute(g,pos,numberOfNodes)
         nodeList = returnDict["nodeList"]
         app.hideSubWindow('Graph')
@@ -115,15 +115,15 @@ app.stopSubWindow()
 
 #Routing Window        
 def getRoute(button):
-	if button == 'Exit':
-		app.hideSubWindow('Routing')
-		app.showSubWindow('Graph')
-	else:
-		global nodeList
-		source = int(app.getEntry('Source Node'))
-		destination = int(app.getEntry('Destination Node'))
-		path = routing.routeRoute(g,pos,nodeList,source,destination)        	
-		routing.showRoute(g,pos,path)	
+    if button == 'Exit':
+        app.hideSubWindow('Routing')
+        app.showSubWindow('Graph')
+    else:
+        global nodeList
+        source = int(app.getEntry('Source Node'))
+        destination = int(app.getEntry('Destination Node'))
+        path = routing.routeRoute(g,pos,nodeList,source,destination)        	
+        routing.showRoute(g,pos,path)	
 
 ###<<< Routing Window >>>###
 app.startSubWindow('Routing', modal=True)
@@ -147,18 +147,18 @@ app.stopSubWindow()
 #Topology Change Window        
 def graphChange(button):
     if button == 'Change':
-		deleteNode = int(app.getEntry('Node To Delete'))
-		global g
-		global numberOfNodes
-		global nodeList
-		returnDict = routing.changeTopology(g,pos,deleteNode,numberOfNodes)
-		g = returnDict["g"]
-		nodeList = returnDict["nodeList"]
+        deleteNode = int(app.getEntry('Node To Delete'))
+        global g
+        global numberOfNodes
+        global nodeList
+        returnDict = routing.changeTopology(g,pos,deleteNode,numberOfNodes)
+        g = returnDict["g"]
+        nodeList = returnDict["nodeList"]
     elif button == 'Show Changed Graph':
-		routing.plotGraph(g,pos)
+        routing.plotGraph(g,pos)
     elif button == 'Reroute':
-		app.hideSubWindow('Topology Change')
-		app.showSubWindow('Routing')
+        app.hideSubWindow('Topology Change')
+        app.showSubWindow('Routing')
     else:        
        pass
 
@@ -177,13 +177,7 @@ app.addButtons(['Change','Show Changed Graph', 'Reroute'],graphChange)
 app.setButtonFont(16,'Times')
 app.stopSubWindow()
 ###<<<------------------->>>###
-<<<<<<< HEAD
-'''
-=======
 
-
-
->>>>>>> 3d9f7de69c17e13e772d9acf868f2c88cc820353
 #Scale Free Graph Window        
 def getDataScaleFree(button):
 	if button == 'Continue':
