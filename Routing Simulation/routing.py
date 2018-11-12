@@ -33,6 +33,14 @@ def editGraphDistance(g,pos):
 		g[startnode][endnode]['weight']=random.randint(1,11)
 		
 	return g
+	
+def edgeWeight(g,pos):
+	for edge in g.edges():
+		startnode = edge[0]
+		endnode = edge[1]
+		g[startnode][endnode]['weight']=random.randint(1,2)
+		
+	return g
 
 def plotDistribution(g,pos):
 	lengths = eucledianDistanceBetweenNodes(g,pos)
@@ -162,6 +170,7 @@ class adHocNode(object):
 		
     
 def listRoute(g,pos,numberOfNodes):
+	print("in list route")
 	
 	#this series of actions provides the adjacency matrix as a list of lists
 	#so we can iterated through them for paths and rputing later
@@ -179,11 +188,11 @@ def listRoute(g,pos,numberOfNodes):
 	for i in range(numberOfNodes):
 		nodeList.append(adHocNode(i))
 	
-	#print(nodeList)
+	print(nodeList)
 	destinationList = []
 	destinationList.extend(range(numberOfNodes))
-			
 	
+		
 	for item in nodeList:
 		item.rDestination = destinationList
 		item.rNextHop = shortestPath(AdjacencyMatrix,item.MACAddress,numberOfNodes)
@@ -191,7 +200,7 @@ def listRoute(g,pos,numberOfNodes):
 		print (item.rDestination)
 		print (item.rNextHop)
   			
-	return nodeList
+	return {"nodeList": nodeList, "AdjacencyMatrix": AdjacencyMatrix}
 
 def routeRoute(g,pos,nodeList, source, destination):
 	path = [] #path that packet takes. saved as a list for the plot		
@@ -231,7 +240,62 @@ def showRoute(g,pos,path):
 		
 	plt.show()
 
-#remove a node and repeat process
-#g.remove_node(1)
-#numberOfNodes -= 1
 
+def changeTopology(g,pos,nodeRemove,numberOfNodes):
+	
+	result = listRoute(g,pos,numberOfNodes)
+	AdjacencyMatrix,nodeList = result["AdjacencyMatrix"],result["nodeList"]
+	
+	g.remove_node(nodeRemove)
+	
+	for i in range(numberOfNodes):
+		AdjacencyMatrix[nodeRemove][i] = 0 
+		AdjacencyMatrix[i][nodeRemove] = 0 
+	
+	for item in nodeList:
+		#item.rDestination = destinationList
+		item.rNextHop = shortestPath(AdjacencyMatrix,item.MACAddress,numberOfNodes)
+		print (item.MACAddress)
+		print (item.rDestination)
+		print (item.rNextHop)
+	
+	return {"g":g, "nodeList":nodeList}
+	
+
+def main():
+	#i just use this to test the plot and path without the GUI
+	numberOfNodes = int(raw_input('Number of Nodes:'))
+	probability = float(raw_input('Probability of Link:'))
+        
+	print('\n\nThe graph will have: ' + str(numberOfNodes) + ' nodes')
+	print('The graph will have: ' + str(probability) + ' probability of link existence\n\n')
+        	
+	g = nx.erdos_renyi_graph(numberOfNodes,probability)
+	pos = nx.spring_layout(g) #define graph layput so node positions stay the same from plot to plot
+	g = editGraphDistance(g,pos)
+	plotDistribution(g,pos)
+
+	source = int(raw_input("What is the source node:"))
+	destination = int(raw_input("What is the destination:"))
+	
+	#plotGraph(g,pos)
+	result = listRoute(g,pos,numberOfNodes)
+	AdjacencyMatrix,nodeList = result["AdjacencyMatrix"],result["nodeList"]
+	
+	path = routeRoute(g,pos,nodeList,source,destination)        	
+	showRoute(g,pos,path)	
+	
+	#add this to GUI
+	#remove a node and repeat
+	nodeRemove = int(raw_input("Change topology by removing a node:"))
+	result2 = changeTopology(g,pos,nodeRemove,numberOfNodes)
+	g = result2["g"]
+	nodeList = result2["nodeList"]
+	#numberOfNodes -= 1
+  			
+	plotGraph(g,pos)
+	path = routeRoute(g,pos,nodeList,source,destination)
+		
+	showRoute(g,pos,path)	
+
+#main()
