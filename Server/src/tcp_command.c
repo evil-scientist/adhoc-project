@@ -451,8 +451,8 @@ void create_packet(int src,int dst, char length,char *data)
     int l,i,j;
     char checksum;
     char *packet;
-    // int client_index = get_index(dst);          
-    int client_index = get_index(1);          
+    int client_index = get_index(dst);          
+    // int client_index = get_index(1);          
     
     if(client_index == -1) {
 
@@ -619,22 +619,23 @@ long get_dist(int bot_id)
     char data[] = {GET_DISTANCE};
     create_packet(0, bot_id, sizeof(data), data);
 
-     // Get response packet
-    int client_index = get_index(bot_id);
-    int ret = recv(client_sock[client_index], client_message, 1024, 0);
-    if (ret < 0) {
-        printf("Error at receiving calibration response!\n");
-        return -1;
-    }
+    //  // Get response packet
+    // int client_index = get_index(bot_id);
+    // int ret = recv(client_sock[client_index], client_message, 1024, 0);
+    // if (ret < 0) {
+    //     printf("Error at receiving calibration response!\n");
+    //     return -1;
+    // }
 
-    // Check (first) data byte of the response packet
-    char *resp_data = get_data(client_message);
-    if (resp_data[0] != GET_DISTANCE) {
-        printf("Received something else aka not the desired command!\n");
-        return -1;
-    }
+    // // Check (first) data byte of the response packet
+    // char *resp_data = get_data(client_message);
+    // if (resp_data[0] != GET_DISTANCE) {
+    //     printf("Received something else aka not the desired command!\n");
+    //     return -1;
+    // }
 
-    return (resp_data[0] << 24 ) | (resp_data[1] << 16) | (resp_data[2] << 8) | (resp_data[3]);
+    // return (resp_data[0] << 24 ) | (resp_data[1] << 16) | (resp_data[2] << 8) | (resp_data[3]);
+    return 0;
 
 }
 

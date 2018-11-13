@@ -68,7 +68,7 @@ uint8_t matrix[NODECOUNT][NODECOUNT]={{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
                                       {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}};
 char ssid[] = "AdHocRobots";
 char password[] = "iliketomoveit";
-char ip[] = {192,168,43,72};
+char ip[] = {192,168,43,71};
 
 uint8_t Command = 0;
 long Rssi = 0;
@@ -135,6 +135,7 @@ void handleCommands(uint8_t src, uint8_t dst, uint8_t internal, uint8_t tcp, uin
                   tempData[1] = nodeID;
                   sendPacket(dst, src, internal, tcp, ACK, counterH, counterL, 2, tempData);
                   break; 
+
     }
 
 #define TCP 1
@@ -479,6 +480,8 @@ sendSSIDandPassword();
 //setLED(REDLED,true);
 //setLED(ORANGELED,true); 
 
+Serial.println("Arduino Serial test!");
+
 
 }
 
@@ -515,6 +518,10 @@ void OnReceive(uint8_t src, uint8_t dst, uint8_t internal, uint8_t tcp, uint8_t 
   {       
     handleCommands(src, dst, internal, tcp, fwd, counterH, counterL, datalen, command, data);
     
+    // JUR: TEST IF RECEIVED
+    if (command == 0x12) {
+      Serial.println("RECEIVED GET DISTANCE!");
+    }
     uint8_t dst_id = 3 - nodeID;            // hackish way to get destination ID, assuming only two bots used
     ForwardPacket(dst_id, command, data);
   }
@@ -532,5 +539,9 @@ void ForwardPacket(uint8_t dst, uint8_t command, uint8_t *data)
   packet[1] = data[1];
   packet[2] = data[0];
 
+  Serial.println("Packet values Forwardpacket");
+  Serial.println(packet[0]);
+  Serial.println(packet[1]);
+  Serial.println(packet[2]);
   CreatePacket(BOT_ID, dst, 0, sizeof(packet), packet);
 }

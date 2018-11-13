@@ -782,6 +782,7 @@ void onPacket(const uint8_t* buffer, size_t size)
       return;
 
     }
+
     Adhoc.process_internal_cmd(tmp);
     return;
   }
@@ -1007,6 +1008,8 @@ void getTCPData() {
 
       long RSSI_d = Adhoc.get_RSSI();
       int dist = 1 * pow(10, (RSSI_ref1 - RSSI_d) / 10 * eta);
+      
+      Serial.print("Calculated distance: ");
       Serial.println(dist);
 
       // Send this to arduino first and then to another car
