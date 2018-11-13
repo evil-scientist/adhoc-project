@@ -17,10 +17,10 @@ long RSSI_ref1;
 long RSSI_ref2;
 
 
-void send_to_server(unsigned char* data, unsigned char size)
+void send_to_server(char* data, unsigned char size)
 {
 
-    unsigned char packet[11];
+    char packet[11];
     packet[0]                              = 0x80;           // Start marker
     packet[PACKET_START_BYTE_LOC +1]       = START_BYTE;
     packet[PACKET_SRC_LOC +1]              = Adhoc.ID_SELF;

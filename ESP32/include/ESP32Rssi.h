@@ -15,7 +15,7 @@ extern long RSSI_ref2;              // reference RSSI @ distance 2
 extern ESP32Adhoc Adhoc;
 extern WiFiClient client;
 
-void send_to_server(unsigned char *data, unsigned char size);
+void send_to_server(char *data, unsigned char size);
 long avg_rssi(int n_samples);
 float calc_eta(long RSSI_ref1, long RSSI_ref2, int dist_1, int dist_2);
 

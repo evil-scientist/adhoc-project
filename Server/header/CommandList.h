@@ -66,6 +66,8 @@
 #define NEXT_POSITION           0x66    // Copied from ESPRssi.h = ugly hack
 #define CALIBRATION_DONE        0x67    // Copied from ESPRssi.h = ugly hack
 
+#define GET_DISTANCE            0x12
+
 /*
  * setting packet location
  * 

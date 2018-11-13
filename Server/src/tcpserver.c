@@ -120,8 +120,8 @@ int main(int argc , char *argv[])
 
         // JUR: custom packets
         printf("  12. Calibrate bot\n");
-        printf(" 13. Send BCAST packet\n");
-
+        printf("  13. Send BCAST packet\n");
+        printf("  14. Get distance based on RSSI\n");
 
         printf(" Waiting for user input : "); 
         scanf("%d",&cmd_val);  
@@ -188,6 +188,11 @@ int main(int argc , char *argv[])
                 char dummy[] = {0};
                 create_packet(0, 255, sizeof(dummy), dummy);
                 break;
+
+            case 14:
+                printf("Getting the distance from the Bot...\n");
+                int id = get_dist(dst_id);
+                printf("Distance based on RSSI: %d", id);
             default:
                 printf("Unknown command received\n");
                 break;

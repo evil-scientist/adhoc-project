@@ -591,7 +591,7 @@ void wait_response(int bot_id, unsigned char cmd)
     }
 
     // Check (first) data byte of the response packet
-    unsigned char *resp_data = get_data(client_message);
+    char *resp_data = get_data(client_message);
     if (resp_data[0] != cmd) {
         printf("Received something else aka not the desired command!\n");
         return;
@@ -600,12 +600,22 @@ void wait_response(int bot_id, unsigned char cmd)
     // Extract RSSI value
     if (cmd == NEXT_POSITION) {
 
-        for (int i=1; i <= 4; i++) {
-            printf("data[%d]: %u\n", i, resp_data[i]);
-        }
-
-        int avg_rrsi_1 = *(int *)(&resp_data[1]);
-        printf("Avg rssi: %d\n", avg_rrsi_1);
-
+        long received_rssi = (long)((resp_data[1] << 24) | (resp_data[2] << 16) | (resp_data[3] << 8) | (resp_data[4] << 0));
+        printf("Received rssi: %ld\n", received_rssi);
     }
+
+    if (cmd == GET_DISTANCE) {
+        printf("Received get distance cmd! \n");
+    }
+}
+
+
+int get_dist(int bot_id)
+{
+
+    // Send calibration command
+    char data[] = { GET_DISTANCE };
+
+    create_packet(0, bot_id, sizeof(data), data);
+    wait_response(bot_id, GET_DISTANCE);
 }

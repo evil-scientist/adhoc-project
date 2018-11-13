@@ -959,17 +959,19 @@ void getTCPData() {
       RSSI_ref1 = avg_rssi(n_samples);
 
       // Send "next position" packet to server
-      unsigned char *data = (unsigned char *) malloc (1 + sizeof(long));
+      char *data = (char *) malloc (1 + sizeof(long));
       data[0] = NEXT_POSITION;
 
       // Include measured avg RSSI into packet
       Serial.println("Splitting integer into byte array");
-      for(int i=1; i <= sizeof(long); i++) {
-        data[i] = (unsigned char)(RSSI_ref1 >> 8*i);    // Split long int into bytes (done with casting to char + byte shifting)
-        Serial.println(data[i]);
-      }
+
+      data[1] = (RSSI_ref1 & 0xFF000000) >> 24;
+      data[2] = (RSSI_ref1 & 0x00FF0000) >> 16;
+      data[3] = (RSSI_ref1 & 0x0000FF00) >> 8;
+      data[4] = (RSSI_ref1 & 0x000000FF);
 
       send_to_server(data, sizeof(long) + 1);
+      
 
       return;
     }
@@ -988,7 +990,7 @@ void getTCPData() {
       Serial.println("");
 
       // Send "CALIBRATION_DONE" command to server
-      unsigned char data[] = { CALIBRATION_DONE };
+      char data[] = { CALIBRATION_DONE };
       send_to_server(data, sizeof(data));
       
       calibrating = false;
