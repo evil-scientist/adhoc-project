@@ -208,6 +208,12 @@ long get_RSSI(int src,int dst) {
 #endif
     ret = recv(client_sock[client_index] , client_message ,1024, 0);
     value = get_data(client_message);
+
+    printf("Packet %d: %d\n", 0, value[0]);
+    printf("Packet %d: %d\n", 1, value[1]);
+    printf("Packet %d: %d\n", 2, value[2]);
+    printf("Packet %d: %d\n", 3, value[3]);
+
 #ifdef __DEBUG__
     printf("%x %x %x %x\n",value[0],value[1],value[2],value[3]);
 #endif
@@ -590,32 +596,54 @@ void wait_response(int bot_id, unsigned char cmd)
         return;
     }
 
-    // Check (first) data byte of the response packet
+    memset(client_message,'\0',1024);
     char *resp_data = get_data(client_message);
-    if (resp_data[0] != cmd) {
-        printf("Received something else aka not the desired command!\n");
-        return;
-    }
 
-    // Extract RSSI value
-    if (cmd == NEXT_POSITION) {
+    // if (resp_data[0] != cmd) {
+    //     printf("Received something else aka not the desired command!\n");
+    //     return;
+    // }
 
-        long received_rssi = (long)((resp_data[1] << 24) | (resp_data[2] << 16) | (resp_data[3] << 8) | (resp_data[4] << 0));
-        printf("Received rssi: %ld\n", received_rssi);
-    }
+    long received_rssi = bit_magic(resp_data);
 
-    if (cmd == GET_DISTANCE) {
-        printf("Received get distance cmd! \n");
-    }
+    printf("Packet %d: %d\n", 0, resp_data[0]);
+    printf("Packet %d: %d\n", 1, resp_data[1]);
+    printf("Packet %d: %d\n", 2, resp_data[2]);
+    printf("Packet %d: %d\n", 3, resp_data[3]);
+    printf("Packet %d: %d\n", 4, resp_data[4]);
+
+
+    printf("Received rssi: %ld\n", received_rssi);
 }
 
 
-int get_dist(int bot_id)
+long get_dist(int bot_id)
 {
 
-    // Send calibration command
-    char data[] = { GET_DISTANCE };
-
+    char data[] = {GET_DISTANCE};
     create_packet(0, bot_id, sizeof(data), data);
-    wait_response(bot_id, GET_DISTANCE);
+
+     // Get response packet
+    int client_index = get_index(bot_id);
+    int ret = recv(client_sock[client_index], client_message, 1024, 0);
+    if (ret < 0) {
+        printf("Error at receiving calibration response!\n");
+        return -1;
+    }
+
+    // Check (first) data byte of the response packet
+    char *resp_data = get_data(client_message);
+    if (resp_data[0] != GET_DISTANCE) {
+        printf("Received something else aka not the desired command!\n");
+        return -1;
+    }
+
+    return (resp_data[0] << 24 ) | (resp_data[1] << 16) | (resp_data[2] << 8) | (resp_data[3]);
+
+}
+
+
+long bit_magic(char * packet)
+{
+    return (packet[1] << 24 ) | (packet[2] << 16) | (packet[3] << 8) | (packet[4]);
 }

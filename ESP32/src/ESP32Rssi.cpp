@@ -37,6 +37,10 @@ void send_to_server(char* data, unsigned char size)
     
     packet[10]                             = 0x81;           // End marker
 
+
+    Serial.println("Printing the command field: ");
+    Serial.println(packet[PACKET_DATA_LOC + 1]);
+
     client.write(packet, sizeof(packet)); 
 }
 

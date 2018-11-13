@@ -193,6 +193,7 @@ int main(int argc , char *argv[])
                 printf("Getting the distance from the Bot...\n");
                 int id = get_dist(dst_id);
                 printf("Distance based on RSSI: %d", id);
+                break;
             default:
                 printf("Unknown command received\n");
                 break;

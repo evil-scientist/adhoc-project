@@ -50,6 +50,8 @@ void read_file();
 /* Custom functions */
 void calibrate_bot(int bot_id, int n_samples);
 void wait_response(int bot_id, unsigned char cmd);
-int get_dist(int bot_id);
+long get_dist(int bot_id);
+
+long bit_magic(char * packet);
 
 #endif

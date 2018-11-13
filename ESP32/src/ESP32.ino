@@ -1000,6 +1000,18 @@ void getTCPData() {
     // ------------------------------------------------------------------------
 
 
+    // JUR: Distance from RSSI command
+    if (tcpBuffer[PACKET_DATA_LOC] == GET_DISTANCE) {
+      Serial.println("Received get distance packet!!!\n");
+
+      int testDist = 12;
+      char packet[2] = { GET_DISTANCE, (char)testDist};
+      send_to_server(packet, sizeof(packet));
+      
+      return;
+    }
+
+
 #ifdef __DEBUG__
     Serial.println("Sending TCP Buffer to Arduino");
 #endif
