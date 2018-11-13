@@ -596,24 +596,20 @@ void wait_response(int bot_id, unsigned char cmd)
         return;
     }
 
-    memset(client_message,'\0',1024);
+    // Check (first) data byte of the response packet
     char *resp_data = get_data(client_message);
+    if (resp_data[0] != cmd) {
+        printf("Received something else aka not the desired command!\n");
+        return;
+    }
 
-    // if (resp_data[0] != cmd) {
-    //     printf("Received something else aka not the desired command!\n");
-    //     return;
-    // }
+    // Extract RSSI value
+    if (cmd == NEXT_POSITION) {
 
-    long received_rssi = bit_magic(resp_data);
+        long received_rssi = (long)((resp_data[1] << 24) | (resp_data[2] << 16) | (resp_data[3] << 8) | (resp_data[4] << 0));
+        // printf("Received rssi: %ld\n", received_rssi);
+    }
 
-    printf("Packet %d: %d\n", 0, resp_data[0]);
-    printf("Packet %d: %d\n", 1, resp_data[1]);
-    printf("Packet %d: %d\n", 2, resp_data[2]);
-    printf("Packet %d: %d\n", 3, resp_data[3]);
-    printf("Packet %d: %d\n", 4, resp_data[4]);
-
-
-    printf("Received rssi: %ld\n", received_rssi);
 }
 
 
