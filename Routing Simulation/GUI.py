@@ -94,7 +94,7 @@ def graphPress(button):
         #routing.editGraphDistance(g,pos)
         routing.plotGraph(g,pos)
     elif button == 'Change Topology':
-		app.showSubWindow('Topology Change')	
+        app.showSubWindow('Topology Change')	
     else:        
         global nodeList
         #global g        
@@ -152,7 +152,7 @@ app.stopSubWindow()
 
 #Topology Change Window        
 def graphChange(button):
-    if button == 'Change':
+	if button == 'Change':
 		deleteNode = int(app.getEntry('Node To Delete'))
 		global g
 		global numberOfNodes
@@ -160,13 +160,13 @@ def graphChange(button):
 		returnDict = routing.changeTopology(g,pos,deleteNode,numberOfNodes)
 		g = returnDict["g"]
 		nodeList = returnDict["nodeList"]
-    elif button == 'Show Changed Graph':
+	elif button == 'Show Changed Graph':
 		routing.plotGraph(g,pos)
-    elif button == 'Reroute':
+	elif button == 'Reroute':
 		app.hideSubWindow('Topology Change')
 		app.showSubWindow('Routing')
-    else:        
-       pass
+	else:        
+		pass
 
 ###<<< Topology Window >>>###
 app.startSubWindow('Topology Change', modal=True)
