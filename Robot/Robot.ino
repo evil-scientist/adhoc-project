@@ -38,6 +38,8 @@
 #define DISTANCEFRONT 0x0A
 #define GETHEADING 0x0D 
 #define GETID 0x0F
+#define RXDISTANCE 0x12 // Sury : Command to handle received distance
+
 
 //Internal commands, communicated with ESP32
 #define INT_ID 0x01
@@ -77,6 +79,9 @@ unsigned long distance = 0;
 uint8_t nodeID = 0;
 uint8_t movementTime = 0;
 uint16_t tempMovementTime = 0;
+
+uint8_t rxDistance = 0; //<---------------------------------------------------- DISTANCE OF OTHER CAR
+uint8_t MyDistance = 0; //<----------------------------------------------------- DISTANCE OF *THIS* CAR
 
 uint16_t PacketCounter = 0;
 long RSSI_Value = 0;
@@ -128,6 +133,9 @@ void handleCommands(uint8_t src, uint8_t dst, uint8_t internal, uint8_t tcp, uin
                           sendPacket(dst, src, internal, tcp, ACK, counterH, counterL, 2, tempData);
                           break;
 
+      case RXDISTANCE: checkDistance(*data);
+                       break;
+      
       case GETHEADING: break;   
 
       case GETID: nodeID = getID();
@@ -135,6 +143,7 @@ void handleCommands(uint8_t src, uint8_t dst, uint8_t internal, uint8_t tcp, uin
                   tempData[1] = nodeID;
                   sendPacket(dst, src, internal, tcp, ACK, counterH, counterL, 2, tempData);
                   break; 
+
     }
 
 #define TCP 1
@@ -229,6 +238,22 @@ uint8_t getDistanceFront()
 }
 
 
+void checkDistance(uint8_t data){
+  
+  rxDistance = data;
+  //DEBUG
+  Serial.println(rxDistance);
+  while (rxDistance >= (MyDistance + 2)){
+          moveForwardForTime(1); // MOVE 1 second and check MyDistance is Updated in MoveForwardForTime  
+  }
+  while (rxDistance <= (MyDistance - 2)){
+          moveBackForTime(1); // MOVE 1 second and check MyDistance is Updated in MoveBackForTime
+  }
+}
+
+
+
+  
 // Move forward
 void moveForward()
 {
@@ -259,6 +284,7 @@ void moveForwardForTime(uint8_t data)
   movementTime = data;
   tempMovementTime = (uint16_t)(millis()/1000);
   Command = MOVEFORWARDTIME;
+  //MyDistance = ; <------------------------------------------- Find out how much the cars move in 1 second, 2 second, etc and write formula to update MyDistance here and in moveBackForTime
 }
 
 //Move back for specific time (in seconds)
@@ -268,6 +294,7 @@ void moveBackForTime(uint8_t data)
   movementTime = data;
   tempMovementTime = (uint16_t)(millis()/1000);
   Command = MOVEBACKTIME;
+  //MyDistance = ; <------------------------------------------- Find out how much the cars move in 1 second, 2 second, etc and write formula to update MyDistance here and in moveBackForTime
 }
 
 //Move back
@@ -479,6 +506,8 @@ sendSSIDandPassword();
 //setLED(REDLED,true);
 //setLED(ORANGELED,true); 
 
+Serial.println("Arduino Serial test!");
+
 
 }
 
@@ -515,6 +544,13 @@ void OnReceive(uint8_t src, uint8_t dst, uint8_t internal, uint8_t tcp, uint8_t 
   {       
     handleCommands(src, dst, internal, tcp, fwd, counterH, counterL, datalen, command, data);
     
+    
+    // JUR: TEST IF RECEIVED
+    /*
+    if (command == 0x12) {
+      Serial.println("RECEIVED GET DISTANCE!");
+    }
+    */
     uint8_t dst_id = 3 - nodeID;            // hackish way to get destination ID, assuming only two bots used
     ForwardPacket(dst_id, command, data);
   }
@@ -532,5 +568,12 @@ void ForwardPacket(uint8_t dst, uint8_t command, uint8_t *data)
   packet[1] = data[1];
   packet[2] = data[0];
 
+  //DEBUG
+  /*
+  Serial.println("Packet values Forwardpacket");
+  Serial.println(packet[0]);
+  Serial.println(packet[1]);
+  Serial.println(packet[2]);
+  */
   CreatePacket(BOT_ID, dst, 0, sizeof(packet), packet);
 }
