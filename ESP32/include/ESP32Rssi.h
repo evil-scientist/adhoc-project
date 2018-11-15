@@ -4,6 +4,7 @@
 /* Calibration messages */
 #define CALIBRATE_BOT           0x11        // copied from server CommandList.h = ugly hack
 #define DISTANCE                0x12        // same
+#define MOVETO_DISTANCE         0x13
 
 #define NEXT_POSITION           0x66
 #define CALIBRATION_DONE        0x67

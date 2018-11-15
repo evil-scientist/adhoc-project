@@ -1,6 +1,6 @@
 #include <EEPROM.h>
 #include "PacketSerial.h"
-#define BOT_ID 1
+#define BOT_ID 2
 #define STARTBYTE 0xFF
 #define PACKETSIZE 254
 #define MINPACKET 8
@@ -68,7 +68,7 @@ uint8_t matrix[NODECOUNT][NODECOUNT]={{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
                                       {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}};
 char ssid[] = "AdHocRobots";
 char password[] = "iliketomoveit";
-char ip[] = {10,0,0,6};
+char ip[] = {10,0,0,5};
 
 uint8_t Command = 0;
 long Rssi = 0;

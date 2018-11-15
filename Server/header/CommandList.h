@@ -67,6 +67,7 @@
 #define CALIBRATION_DONE        0x67    // Copied from ESPRssi.h = ugly hack
 
 #define DISTANCE                0x12
+#define MOVETO_DISTANCE         0x13
 
 /*
  * setting packet location

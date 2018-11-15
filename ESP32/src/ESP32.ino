@@ -960,18 +960,8 @@ void getTCPData() {
       RSSI_ref1 = avg_rssi(n_samples);
 
       // Send "next position" packet to server
-      char *data = (char *) malloc (1 + sizeof(long));
-      data[0] = NEXT_POSITION;
-
-      // Include measured avg RSSI into packet
-      Serial.println("Splitting integer into byte array");
-
-      data[1] = (RSSI_ref1 & 0xFF000000) >> 24;
-      data[2] = (RSSI_ref1 & 0x00FF0000) >> 16;
-      data[3] = (RSSI_ref1 & 0x0000FF00) >> 8;
-      data[4] = (RSSI_ref1 & 0x000000FF);
-
-      send_to_server(data, sizeof(long) + 1);
+     char data[] = {NEXT_POSITION};
+     send_to_server(data, sizeof(data));
       
 
       return;
@@ -1017,6 +1007,43 @@ void getTCPData() {
       char data[] = {DISTANCE, dist};   // think what happens with int-char
       send_to_server(data, sizeof(data));
       
+      return;
+    }
+
+    // JUR: Move to distance command
+    if (tcpBuffer[PACKET_DATA_LOC] == MOVETO_DISTANCE) {
+      Serial.println("Received moveto distance packet!!!\n");
+
+      // Send distance to TCP
+      char data[] = {MOVETO_DISTANCE, 0x00};   // think what happens with int-char
+      send_to_server(data, sizeof(data));
+      
+      // Create the packet for the arduino
+      // Allocate memory for the packet
+      char len = 11 + sizeof(data);
+      char *packet=(char*)calloc(len,sizeof(char));
+
+      packet[0]= 0x80;            // START MARKER
+      packet[PACKET_START_BYTE_LOC + 1] = 0xFF;
+      packet[PACKET_SRC_LOC + 1] = Adhoc.ID_SELF;
+      packet[PACKET_DST_LOC + 1] = Adhoc.ID_SELF;
+      packet[PACKET_INTERMEDIATE_SRC_LOC + 1] = Adhoc.ID_SELF;
+      packet[PACKET_INTERNAL_CMD_LOC + 1] = 0b000 << 5|0b1 << 4|0b0 << 3|0b000;
+      packet[PACKET_COUNTER_HIGH_LOC + 1] = 0x00;
+      packet[PACKET_COUNTER_LOW_LOC + 1] = 0x00;
+      packet[PACKET_DATA_LENGTH_LOC + 1] = len;     // Length of data = MOVETIME, time
+      
+      // DATA
+      for(int l=0; l<len; l++)
+      {
+          packet[PACKET_DATA_LOC + 1 + l] = *(data+l);
+      }
+
+      // END MARKER
+      packet[11 + 2 - 1]= 0x81;    // END MARKER
+
+      sendToArduino(packet, len);
+
       return;
     }
 

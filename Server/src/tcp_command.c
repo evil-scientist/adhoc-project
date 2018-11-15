@@ -457,8 +457,7 @@ void create_packet(int src,int dst, char length,char *data)
     int l,i,j;
     char checksum;
     char *packet;
-    int client_index = get_index(dst);          
-    // int client_index = get_index(1);          
+    int client_index = get_index(dst);      
     
     if(client_index == -1) {
 
@@ -622,6 +621,7 @@ void wait_response(int bot_id, unsigned char cmd)
 long get_dist(int bot_id)
 {
 
+    // 1.SEND COMMAND TO FIRST BOT AND WAIT FOR REPLY
     // Send a packet w/DISTANCE command to bot
     char data[] = {DISTANCE};
     create_packet(0, bot_id, sizeof(data), data);
@@ -642,6 +642,32 @@ long get_dist(int bot_id)
         return -1;
     }
 
+
+
+    // 2. "PASS" THE REPLY TO THE SECOND BOT AND WAIT FOR REPLY
+    // send it to the OTHER car
+    int dst_id = 3 - bot_id;
+    char data2[] = {MOVETO_DISTANCE, resp_data[1]};
+    create_packet(0, dst_id, sizeof(data2), data2);
+
+    // Get response packet from a bot 2
+    client_index = get_index(dst_id);
+    memset(client_message,'\0',1024);               // clear input buffer
+    ret = recv(client_sock[client_index], client_message, 1024, 0);
+    if (ret < 0) {
+        printf("Error at receiving calibration response!\n");
+        return -1;
+    }
+
+    // Check (first) data byte of the response packet
+    char *resp_data2 = get_data(client_message);
+    if (resp_data2[0] != MOVETO_DISTANCE) {
+        printf("Received something else aka not the desired command!\n");
+        return -1;
+    }
+
+    printf("Received data:\n");
+    printf("command received: %d\n", resp_data2[0]);
 
     return 0;
 
