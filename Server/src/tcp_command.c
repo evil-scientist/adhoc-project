@@ -634,6 +634,7 @@ long get_dist(int bot_id)
 
     // At this point we recieve the distance!
     printf("Received response from car one!\n");
+    printf("resp_data[1] = %d\n", resp_data[1]);
 
     // 2. "PASS" THE REPLY TO THE SECOND BOT AND WAIT FOR REPLY
     // send it to the OTHER car

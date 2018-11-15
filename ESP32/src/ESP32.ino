@@ -1004,7 +1004,9 @@ void getTCPData() {
       Serial.println(dist);
 
       // Send distance to TCP
-      char data[] = {DISTANCE, dist};   // think what happens with int-char
+      char *data = (char *) malloc (1 + sizeof(char));
+      data[0] = DISTANCE;
+      data[1] = dist;
       send_to_server(data, sizeof(data));
       
       return;
