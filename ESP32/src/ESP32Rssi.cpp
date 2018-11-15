@@ -20,7 +20,7 @@ long RSSI_ref2;
 void send_to_server(char* data, unsigned char size)
 {
 
-    char packet[11];
+    char packet[12];
     packet[0]                              = 0x80;           // Start marker
     packet[PACKET_START_BYTE_LOC +1]       = START_BYTE;
     packet[PACKET_SRC_LOC +1]              = Adhoc.ID_SELF;
@@ -31,17 +31,11 @@ void send_to_server(char* data, unsigned char size)
     packet[PACKET_COUNTER_LOW_LOC +1]      = 0;
     packet[PACKET_DATA_LENGTH_LOC +1]      = size;
     
-    Serial.println("Printing the content of te packet before sending to server!");
     for (int i=0; i< size; i++) {
         packet[PACKET_DATA_LOC + 1 + i] = data[i];
-        Serial.print(packet[PACKET_DATA_LOC + 1 + i], DEC);
     }
     
-    packet[PACKET_DATA_LENGTH_LOC + 1 + size]   = 0x81;           // End marker
-
-
-    Serial.println("Printing the command field: ");
-    Serial.println(packet[PACKET_DATA_LOC + 1]);
+    packet[11]   = 0x81;                                     // End marker
 
     client.write(packet, sizeof(packet)); 
 }

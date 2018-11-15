@@ -183,18 +183,14 @@ void read_file() {
 /* Function to extract data
  * from the packet */
 char *get_data(char packet[]) {
-    int i;
-    char len = packet[PACKET_DATA_LENGTH_LOC + 1];          // JUR: the +1 was missing in original!
+
+    char len = packet[PACKET_DATA_LENGTH_LOC +1];          // JUR: the +1 was missing in original!
     char *data = (char *)malloc(len * sizeof(char));
 
-    // Checking the contents of a packet from dataLength field onwards
-    printf("packet[DATA_LEN_LOC+1] = %d\n", packet[PACKET_DATA_LENGTH_LOC +1]);
-    for(i = 0 ; i < len ; i++) {
+    for(int i = 0 ; i < len ; i++) {
         data[i] = packet[PACKET_DATA_LOC + 1 + i];
-        printf("packet[DATA_LOC + 1 + %d] = %d\n", i, packet[PACKET_DATA_LOC + 1 + i]);
     }
 
-    printf("packet[END MARKER] = %d\n", (unsigned char)packet[PACKET_DATA_LENGTH_LOC + 1 + len]);
     return data;
 }
 
@@ -576,7 +572,7 @@ void calibrate_bot(int bot_id, int n_samples)
     data[1] = n_samples;
 
     create_packet(0, bot_id, sizeof(data), data);
-    wait_response(bot_id, NEXT_POSITION);                       // NEXT_POSITION
+    wait_response(bot_id, NEXT_POSITION);                           // NEXT_POSITION
     
     // Wait for robot placement
     printf("Place the robot 2m from the AP and press ENTER when ready\n");
@@ -605,14 +601,8 @@ void wait_response(int bot_id, unsigned char cmd)
     char *resp_data = get_data(client_message);
     if (resp_data[0] != cmd) {
         printf("Received something else aka not the desired command!\n");
+        printf("Received: %d\n", resp_data[0]);
         return;
-    }
-
-    // Extract RSSI value
-    if (cmd == NEXT_POSITION) {
-
-        long received_rssi = (long)((resp_data[1] << 24) | (resp_data[2] << 16) | (resp_data[3] << 8) | (resp_data[4] << 0));
-        // printf("Received rssi: %ld\n", received_rssi);
     }
 
 }
@@ -631,7 +621,7 @@ long get_dist(int bot_id)
     memset(client_message,'\0',1024);               // clear input buffer
     int ret = recv(client_sock[client_index], client_message, 1024, 0);
     if (ret < 0) {
-        printf("Error at receiving calibration response!\n");
+        printf("Error at receiving get_dist response pt.1!\n");
         return -1;
     }
 
@@ -642,7 +632,8 @@ long get_dist(int bot_id)
         return -1;
     }
 
-
+    // At this point we recieve the distance!
+    printf("Received response from car one!\n");
 
     // 2. "PASS" THE REPLY TO THE SECOND BOT AND WAIT FOR REPLY
     // send it to the OTHER car
@@ -650,12 +641,15 @@ long get_dist(int bot_id)
     char data2[] = {MOVETO_DISTANCE, resp_data[1]};
     create_packet(0, dst_id, sizeof(data2), data2);
 
+    printf("Sent movetodistance to second car!\n");
+    printf("Waiting for response from car two!\n");
+
     // Get response packet from a bot 2
     client_index = get_index(dst_id);
     memset(client_message,'\0',1024);               // clear input buffer
     ret = recv(client_sock[client_index], client_message, 1024, 0);
     if (ret < 0) {
-        printf("Error at receiving calibration response!\n");
+        printf("Error at receiving get_dist response pt.2!\n");
         return -1;
     }
 
@@ -666,8 +660,7 @@ long get_dist(int bot_id)
         return -1;
     }
 
-    printf("Received data:\n");
-    printf("command received: %d\n", resp_data2[0]);
+    printf("Received response from car two!\n");
 
     return 0;
 
