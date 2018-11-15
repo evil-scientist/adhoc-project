@@ -31,11 +31,13 @@ void send_to_server(char* data, unsigned char size)
     packet[PACKET_COUNTER_LOW_LOC +1]      = 0;
     packet[PACKET_DATA_LENGTH_LOC +1]      = size;
     
+    Serial.println("Printing the content of te packet before sending to server!");
     for (int i=0; i< size; i++) {
         packet[PACKET_DATA_LOC + 1 + i] = data[i];
+        Serial.print(packet[PACKET_DATA_LOC + 1 + i], DEC);
     }
     
-    packet[10]                             = 0x81;           // End marker
+    packet[PACKET_DATA_LENGTH_LOC + 1 + size]   = 0x81;           // End marker
 
 
     Serial.println("Printing the command field: ");

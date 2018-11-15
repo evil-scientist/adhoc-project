@@ -186,9 +186,15 @@ char *get_data(char packet[]) {
     int i;
     char len = packet[PACKET_DATA_LENGTH_LOC + 1];          // JUR: the +1 was missing in original!
     char *data = (char *)malloc(len * sizeof(char));
+
+    // Checking the contents of a packet from dataLength field onwards
+    printf("packet[DATA_LEN_LOC+1] = %d\n", packet[PACKET_DATA_LENGTH_LOC +1]);
     for(i = 0 ; i < len ; i++) {
         data[i] = packet[PACKET_DATA_LOC + 1 + i];
+        printf("packet[DATA_LOC + 1 + %d] = %d\n", i, packet[PACKET_DATA_LOC + 1 + i]);
     }
+
+    printf("packet[END MARKER] = %d\n", (unsigned char)packet[PACKET_DATA_LENGTH_LOC + 1 + len]);
     return data;
 }
 
@@ -616,25 +622,27 @@ void wait_response(int bot_id, unsigned char cmd)
 long get_dist(int bot_id)
 {
 
-    char data[] = {GET_DISTANCE};
+    // Send a packet w/DISTANCE command to bot
+    char data[] = {DISTANCE};
     create_packet(0, bot_id, sizeof(data), data);
 
-    //  // Get response packet
-    // int client_index = get_index(bot_id);
-    // int ret = recv(client_sock[client_index], client_message, 1024, 0);
-    // if (ret < 0) {
-    //     printf("Error at receiving calibration response!\n");
-    //     return -1;
-    // }
+     // Get response packet from a bot
+    int client_index = get_index(bot_id);
+    memset(client_message,'\0',1024);               // clear input buffer
+    int ret = recv(client_sock[client_index], client_message, 1024, 0);
+    if (ret < 0) {
+        printf("Error at receiving calibration response!\n");
+        return -1;
+    }
 
-    // // Check (first) data byte of the response packet
-    // char *resp_data = get_data(client_message);
-    // if (resp_data[0] != GET_DISTANCE) {
-    //     printf("Received something else aka not the desired command!\n");
-    //     return -1;
-    // }
+    // Check (first) data byte of the response packet
+    char *resp_data = get_data(client_message);
+    if (resp_data[0] != DISTANCE) {
+        printf("Received something else aka not the desired command!\n");
+        return -1;
+    }
 
-    // return (resp_data[0] << 24 ) | (resp_data[1] << 16) | (resp_data[2] << 8) | (resp_data[3]);
+
     return 0;
 
 }

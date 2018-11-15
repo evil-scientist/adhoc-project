@@ -1002,18 +1002,20 @@ void getTCPData() {
 
 
     // JUR: Distance from RSSI command
-    if (tcpBuffer[PACKET_DATA_LOC] == GET_DISTANCE) {
+    if (tcpBuffer[PACKET_DATA_LOC] == DISTANCE) {
       Serial.println("Received get distance packet!!!\n");
 
 
       long RSSI_d = Adhoc.get_RSSI();
-      int dist = 1 * pow(10, (RSSI_ref1 - RSSI_d) / 10 * eta);
-      
+      // int dist = 1 * pow(10, (RSSI_ref1 - RSSI_d) / 10 * eta);
+      char dist = 15;
+
       Serial.print("Calculated distance: ");
       Serial.println(dist);
 
-      // Send this to arduino first and then to another car
-      sendToArduino(tcpBuffer, numBytes);
+      // Send distance to TCP
+      char data[] = {DISTANCE, dist};   // think what happens with int-char
+      send_to_server(data, sizeof(data));
       
       return;
     }

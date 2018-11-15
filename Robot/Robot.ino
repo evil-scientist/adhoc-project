@@ -68,7 +68,7 @@ uint8_t matrix[NODECOUNT][NODECOUNT]={{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
                                       {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}};
 char ssid[] = "AdHocRobots";
 char password[] = "iliketomoveit";
-char ip[] = {192,168,43,71};
+char ip[] = {10,0,0,6};
 
 uint8_t Command = 0;
 long Rssi = 0;
