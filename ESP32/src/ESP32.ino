@@ -997,17 +997,18 @@ void getTCPData() {
 
 
       long RSSI_d = Adhoc.get_RSSI();
-      // int dist = 1 * pow(10, (RSSI_ref1 - RSSI_d) / 10 * eta);
-      char dist = 15;
+      char dist = 1 * pow(10, (RSSI_ref1 - RSSI_d) / 10 * eta);
+      // char dist = 15;
 
       Serial.print("Calculated distance: ");
-      Serial.println(dist);
+      Serial.print(dist, DEC);
+      Serial.println();
 
       // Send distance to TCP
       char *data = (char *) malloc (1 + sizeof(char));
       data[0] = DISTANCE;
       data[1] = dist;
-      send_to_server(data, sizeof(data));
+      send_to_server(data, 2);
       
       return;
     }
