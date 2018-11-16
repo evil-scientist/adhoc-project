@@ -1028,15 +1028,16 @@ void getTCPData() {
       data[1] = 0x00;
       send_to_server(data, 2);
       
-
       char curr_dist = tcpBuffer[PACKET_DATA_LOC + 1];
+      char multiplier = abs(curr_dist - prev_dist); 
+     
       if (curr_dist < prev_dist) {
         data[0] = MOVE_REVERSE_TIME;
-        data[1] = 2;
+        data[1] = 4*multiplier;
       }
       else if (curr_dist > prev_dist) {
         data[0] = MOVEFORWARD_TIME;
-        data[1] = 2;
+        data[1] = 4*multiplier;
 
       } else {
         return;
