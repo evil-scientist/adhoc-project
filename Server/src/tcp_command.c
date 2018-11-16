@@ -365,6 +365,8 @@ void send_forward_time(int src,int dst,int time) {
         create_packet(src,dst,sizeof(data),data);
     }
 
+    // After moving, do the distance command
+
 }
 
 /* 

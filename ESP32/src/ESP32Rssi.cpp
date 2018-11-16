@@ -15,6 +15,7 @@ bool calibrating = false;
 float eta;
 long RSSI_ref1;
 long RSSI_ref2;
+char prev_dist = 0;
 
 
 void send_to_server(char* data, unsigned char size)

@@ -18,6 +18,7 @@ extern bool calibrating;            // calibration state flag
 extern float eta;                   // pathloss exponent
 extern long RSSI_ref1;              // reference RSSI @ distance 1
 extern long RSSI_ref2;              // reference RSSI @ distance 2
+extern char prev_dist;              // previous distance
 
 extern ESP32Adhoc Adhoc;
 extern WiFiClient client;

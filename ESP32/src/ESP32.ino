@@ -975,7 +975,10 @@ void getTCPData() {
       RSSI_ref2 = avg_rssi(n_samples);
 
       // Calc pathloss exp
+      // HARDCODING PATHLOSS
       eta = calc_eta(RSSI_ref1, RSSI_ref2, 1, 2);
+      //eta = 4;
+
       Serial.print("Calculated pathloss exponent: ");
       Serial.print(eta);
       Serial.println("");
@@ -996,7 +999,8 @@ void getTCPData() {
       Serial.println("Received get distance packet!!!\n");
 
 
-      long RSSI_d = Adhoc.get_RSSI();
+      //long RSSI_d = Adhoc.get_RSSI();
+      long RSSI_d = avg_rssi(20);
       char dist = 1 * pow(10, (RSSI_ref1 - RSSI_d) / (10 * eta));
 
       Serial.print("Calculated distance: ");
@@ -1004,11 +1008,13 @@ void getTCPData() {
       Serial.println();
 
       // Send distance to TCP
-      char *data = (char *) malloc (1 + sizeof(char));
+      char *data = (char *) malloc (2);
       data[0] = DISTANCE;
       data[1] = dist;
       send_to_server(data, 2);
       
+
+      free(data);
       return;
     }
 
@@ -1017,15 +1023,24 @@ void getTCPData() {
       Serial.println("Received moveto distance packet!!!\n");
 
       // Send distance to TCP
-      char *data = (char *) malloc (2 * sizeof(char));
+      char *data = (char *) malloc (2);
       data[0] = MOVETO_DISTANCE;
       data[1] = 0x00;
       send_to_server(data, 2);
       
 
-      // change the packet command for arduino
-      data[0] = MOVEFORWARD_TIME;
-      data[1] = 5;
+      char curr_dist = tcpBuffer[PACKET_DATA_LOC + 1];
+      if (curr_dist < prev_dist) {
+        data[0] = MOVE_REVERSE_TIME;
+        data[1] = 2;
+      }
+      else if (curr_dist > prev_dist) {
+        data[0] = MOVEFORWARD_TIME;
+        data[1] = 2;
+
+      } else {
+        return;
+      }
 
       // Create the packet for the arduino
       // Allocate memory for the packet
@@ -1049,6 +1064,7 @@ void getTCPData() {
 
       sendToArduino(packet, len+8);
 
+      prev_dist = curr_dist;
       free(data);
       return;
     }

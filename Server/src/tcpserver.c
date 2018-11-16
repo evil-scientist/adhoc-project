@@ -131,6 +131,7 @@ int main(int argc , char *argv[])
 
             case 1:
                 send_forward_time(src_id, dst_id,0);
+                get_dist(src_id);
                 break;
             case 2:
                 printf("Enter the time in seconds : \n");
