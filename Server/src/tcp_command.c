@@ -622,6 +622,7 @@ long get_dist(int bot_id)
     int ret = recv(client_sock[client_index], client_message, 1024, 0);
     if (ret < 0) {
         printf("Error at receiving get_dist response pt.1!\n");
+        perror("Error description:\n");
         return -1;
     }
 
@@ -636,10 +637,15 @@ long get_dist(int bot_id)
     printf("Received response from car one!\n");
     printf("resp_data[1] = %d\n", resp_data[1]);
 
+
     // 2. "PASS" THE REPLY TO THE SECOND BOT AND WAIT FOR REPLY
     // send it to the OTHER car
     int dst_id = 3 - bot_id;
-    char data2[] = {MOVETO_DISTANCE, resp_data[1]};
+    
+    char *data2 = (char *) malloc (2);
+    // char data2[] = {MOVETO_DISTANCE, resp_data[1]};
+    data2[0] = MOVETO_DISTANCE;
+    data2[1] = resp_data[1];
     create_packet(0, dst_id, sizeof(data2), data2);
 
     printf("Sent movetodistance to second car!\n");
@@ -651,6 +657,7 @@ long get_dist(int bot_id)
     ret = recv(client_sock[client_index], client_message, 1024, 0);
     if (ret < 0) {
         printf("Error at receiving get_dist response pt.2!\n");
+        perror("Error description:\n");
         return -1;
     }
 
@@ -663,6 +670,8 @@ long get_dist(int bot_id)
 
     printf("Received response from car two!\n");
 
+    // Free malloc
+    free(data2);
     return 0;
 
 }

@@ -997,8 +997,7 @@ void getTCPData() {
 
 
       long RSSI_d = Adhoc.get_RSSI();
-      char dist = 1 * pow(10, (RSSI_ref1 - RSSI_d) / 10 * eta);
-      // char dist = 15;
+      char dist = 1 * pow(10, (RSSI_ref1 - RSSI_d) / (10 * eta));
 
       Serial.print("Calculated distance: ");
       Serial.print(dist, DEC);
@@ -1018,35 +1017,35 @@ void getTCPData() {
       Serial.println("Received moveto distance packet!!!\n");
 
       // Send distance to TCP
-      char data[] = {MOVETO_DISTANCE, 0x00};   // think what happens with int-char
-      send_to_server(data, sizeof(data));
+      char *data = (char *) malloc (2 * sizeof(char));
+      data[0] = MOVETO_DISTANCE;
+      data[1] = 0x00;
+
+      send_to_server(data, 2);
       
       // Create the packet for the arduino
       // Allocate memory for the packet
-      char len = 11 + sizeof(data);
-      char *packet=(char*)calloc(len,sizeof(char));
+      char len = 2;
+      char *packet=(char *) calloc(8 + len, 1); 
 
-      packet[0]= 0x80;            // START MARKER
-      packet[PACKET_START_BYTE_LOC + 1] = 0xFF;
-      packet[PACKET_SRC_LOC + 1] = Adhoc.ID_SELF;
-      packet[PACKET_DST_LOC + 1] = Adhoc.ID_SELF;
-      packet[PACKET_INTERMEDIATE_SRC_LOC + 1] = Adhoc.ID_SELF;
-      packet[PACKET_INTERNAL_CMD_LOC + 1] = 0b000 << 5|0b1 << 4|0b0 << 3|0b000;
-      packet[PACKET_COUNTER_HIGH_LOC + 1] = 0x00;
-      packet[PACKET_COUNTER_LOW_LOC + 1] = 0x00;
-      packet[PACKET_DATA_LENGTH_LOC + 1] = len;     // Length of data = MOVETIME, time
+      packet[PACKET_START_BYTE_LOC] = 0xFF;
+      packet[PACKET_SRC_LOC] = Adhoc.ID_SELF;
+      packet[PACKET_DST_LOC] = Adhoc.ID_SELF;
+      packet[PACKET_INTERMEDIATE_SRC_LOC] = Adhoc.ID_SELF;
+      packet[PACKET_INTERNAL_CMD_LOC] = 0b000 << 5|0b1 << 4|0b0 << 3|0b000;
+      packet[PACKET_COUNTER_HIGH_LOC] = 0x00;
+      packet[PACKET_COUNTER_LOW_LOC] = 0x00;
+      packet[PACKET_DATA_LENGTH_LOC] = len;     // Length of data = MOVETIME, time
       
       // DATA
-      for(int l=0; l<len; l++)
+      for(int l= 0; l<len; l++)
       {
-          packet[PACKET_DATA_LOC + 1 + l] = *(data+l);
+          packet[PACKET_DATA_LOC + l] = *(data+l);
       }
 
-      // END MARKER
-      packet[11 + 2 - 1]= 0x81;    // END MARKER
+      sendToArduino(packet, len+8);
 
-      sendToArduino(packet, len);
-
+      free(data);
       return;
     }
 

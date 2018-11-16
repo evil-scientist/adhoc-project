@@ -39,6 +39,10 @@
 #define GETHEADING 0x0D 
 #define GETID 0x0F
 
+// CUSTOM COMMANDS
+#define DISTANCE          0x12
+#define MOVETO_DISTANCE   0x13
+
 //Internal commands, communicated with ESP32
 #define INT_ID 0x01
 #define INT_SSID_PWD 0x02
@@ -134,7 +138,11 @@ void handleCommands(uint8_t src, uint8_t dst, uint8_t internal, uint8_t tcp, uin
                   tempData[0] = command;
                   tempData[1] = nodeID;
                   sendPacket(dst, src, internal, tcp, ACK, counterH, counterL, 2, tempData);
-                  break; 
+                  break;
+
+      default:
+        Serial.println("Received some command that is not handeled by switch case!");
+        break;
 
     }
 
@@ -519,11 +527,18 @@ void OnReceive(uint8_t src, uint8_t dst, uint8_t internal, uint8_t tcp, uint8_t 
     handleCommands(src, dst, internal, tcp, fwd, counterH, counterL, datalen, command, data);
     
     // JUR: TEST IF RECEIVED
-    if (command == 0x12) {
+    if (command == DISTANCE) {
       Serial.println("RECEIVED GET DISTANCE!");
     }
-    uint8_t dst_id = 3 - nodeID;            // hackish way to get destination ID, assuming only two bots used
-    ForwardPacket(dst_id, command, data);
+
+    if (command == MOVETO_DISTANCE) {
+      Serial.println("RECEIVED MOVETO_DISTANCE COMMAND!");
+    }
+
+    Serial.println("RECEIVED SOME PACKET");
+
+    // uint8_t dst_id = 3 - nodeID;            // hackish way to get destination ID, assuming only two bots used
+    // ForwardPacket(dst_id, command, data);
   }
   
 }
