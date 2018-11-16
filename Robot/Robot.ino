@@ -10,10 +10,13 @@
 #define ACK 1
 #define ADDRESS 0
 
-#define MOTOR_LEFT_PWM  10
-#define MOTOR_LEFT_DIR  9
-#define MOTOR_RIGHT_PWM 12
-#define MOTOR_RIGHT_DIR  13
+
+#define MOTOR_LEFT_DIR      9
+#define MOTOR_LEFT_PWM      10
+#define MOTOR_RIGHT_PWM     7
+#define MOTOR_RIGHT_DIR     6
+
+
 
 #define ULTRASONIC_FRONT_TRIGGER   43
 #define ULTRASONIC_FRONT_ECHO   41
@@ -242,12 +245,18 @@ uint8_t getDistanceFront()
 void moveForward()
 {
   stopMotors();
-  
-  digitalWrite(MOTOR_LEFT_DIR,LOW);
-  digitalWrite(MOTOR_LEFT_PWM,HIGH);
 
-  digitalWrite(MOTOR_RIGHT_DIR,LOW);
-  digitalWrite(MOTOR_RIGHT_PWM,HIGH);
+  analogWrite(MOTOR_LEFT_DIR, 0);
+  analogWrite(MOTOR_LEFT_PWM, 127);
+
+  analogWrite(MOTOR_RIGHT_DIR, 0);
+  analogWrite(MOTOR_RIGHT_PWM, 127);
+
+  // digitalWrite(MOTOR_LEFT_DIR,LOW);
+  // digitalWrite(MOTOR_LEFT_PWM,HIGH);
+
+  // digitalWrite(MOTOR_RIGHT_DIR,LOW);
+  // digitalWrite(MOTOR_RIGHT_PWM,HIGH);
 
 }
 
@@ -283,12 +292,17 @@ void moveBackForTime(uint8_t data)
 void moveBack()
 {
   stopMotors();
-  digitalWrite(MOTOR_LEFT_DIR,HIGH);
-  digitalWrite(MOTOR_LEFT_PWM,HIGH);
+  // digitalWrite(MOTOR_LEFT_DIR,HIGH);
+  // digitalWrite(MOTOR_LEFT_PWM,HIGH);
 
-  digitalWrite(MOTOR_RIGHT_DIR,HIGH);
-  digitalWrite(MOTOR_RIGHT_PWM,HIGH);
+  // digitalWrite(MOTOR_RIGHT_DIR,HIGH);
+  // digitalWrite(MOTOR_RIGHT_PWM,HIGH);
   
+  analogWrite(MOTOR_LEFT_DIR, 255);
+  analogWrite(MOTOR_LEFT_PWM, 127);
+
+  analogWrite(MOTOR_RIGHT_DIR, 255);
+  analogWrite(MOTOR_RIGHT_PWM, 127);
 }
 
 //Turn left for specific time (in seconds)
