@@ -1020,9 +1020,13 @@ void getTCPData() {
       char *data = (char *) malloc (2 * sizeof(char));
       data[0] = MOVETO_DISTANCE;
       data[1] = 0x00;
-
       send_to_server(data, 2);
       
+
+      // change the packet command for arduino
+      data[0] = MOVEFORWARD_TIME;
+      data[1] = 5;
+
       // Create the packet for the arduino
       // Allocate memory for the packet
       char len = 2;

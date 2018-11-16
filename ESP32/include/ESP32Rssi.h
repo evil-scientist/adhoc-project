@@ -1,6 +1,10 @@
 #ifndef ESP32RSSI_H
 #define ESP32RSSI_H
 
+/* Movement messages */
+#define MOVEFORWARD_TIME        0X02
+#define MOVE_REVERSE_TIME       0X04
+
 /* Calibration messages */
 #define CALIBRATE_BOT           0x11        // copied from server CommandList.h = ugly hack
 #define DISTANCE                0x12        // same
